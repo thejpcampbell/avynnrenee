@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avynn's Story Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#2D8EFF;
+  --blue-bright:#4FA3FF;
+  --blue-dim:#1A5FAA;
+  --blue-pale:#050D1A;
+  --navy:#0A1628;
+  --navy-2:#0D1E35;
+  --navy-3:#112445;
+  --midnight:#060A10;
+  --midnight-2:#080D16;
+  --midnight-3:#0C1220;
+  --text:#F4F8FF;
+  --text-body:#C0CFEA;
+  --text-muted:#5A7099;
+  --border:#1A2A42;
+  --border-bright:#243A5C;
+  /* GOLD — Avynn's accent, distinct from the blue */
+  --gold:#C9A84C;
+  --gold-bright:#E8C97A;
+  --gold-dim:#7A5E1A;
+  --gold-glow:rgba(201,168,76,.18);
+}
+
+body{
+  background:var(--midnight);
+  color:var(--text);
+  font-family:'Barlow',sans-serif;
+  font-weight:400;
+  line-height:1.8;
+  min-height:100vh;
+  font-size:16px;
+}
+
+/* ── COVER ── */
+.cover{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:3rem 2rem;text-align:center;
+  background:radial-gradient(ellipse at 50% 40%, #0A1628 0%, #060A10 70%);
+  position:relative;overflow:hidden;
+}
+/* subtle star field on cover */
+.cover::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle,rgba(232,201,122,.6) 1px,transparent 1px),
+    radial-gradient(circle,rgba(79,163,255,.4) 1px,transparent 1px),
+    radial-gradient(circle,rgba(244,248,255,.5) 1px,transparent 1px);
+  background-size:180px 160px, 220px 200px, 140px 130px;
+  background-position:0 0, 80px 60px, 40px 100px;
+  pointer-events:none;opacity:.45;
+}
+.cover-eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.6rem;position:relative;}
+.cover h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.8rem,8vw,5rem);
+  font-weight:600;color:var(--text);
+  line-height:1.05;margin-bottom:.6rem;position:relative;
+}
+.cover h1 em{color:var(--gold-bright);font-style:italic;}
+.cover-rule{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.8rem auto;position:relative;}
+.cover-sub{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2.5rem;position:relative;}
+.cover-verse{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:19px;color:var(--text-body);max-width:440px;
+  margin:0 auto 2.75rem;
+  border-left:2px solid var(--gold);padding-left:1.5rem;
+  text-align:left;line-height:1.9;position:relative;
+}
+.cover-verse cite{
+  display:block;font-style:normal;font-size:11px;
+  font-family:'Barlow',sans-serif;color:var(--gold-bright);
+  margin-top:10px;letter-spacing:.15em;
+}
+.start-btn{
+  background:transparent;border:1px solid var(--gold);
+  color:var(--gold-bright);font-family:'Barlow',sans-serif;
+  font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  padding:15px 52px;cursor:pointer;transition:all .25s;position:relative;
+}
+.start-btn:hover{background:var(--gold);color:var(--midnight);letter-spacing:.28em;}
+
+/* ── APP ── */
+.app{display:none;max-width:900px;margin:0 auto;padding:2rem 1.75rem 5rem;}
+
+/* ── TOP NAV ── */
+.top-nav{
+  display:flex;gap:2px;margin-bottom:2.5rem;
+  border-bottom:1px solid var(--border);overflow-x:auto;
+}
+.tnb{
+  background:transparent;border:none;
+  border-bottom:2px solid transparent;
+  color:var(--text-muted);font-family:'Barlow',sans-serif;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  padding:12px 16px;cursor:pointer;white-space:nowrap;
+  margin-bottom:-1px;transition:all .15s;font-weight:400;
+}
+.tnb.active{color:var(--gold-bright);border-bottom-color:var(--gold);}
+.tnb:hover:not(.active){color:var(--text);}
+.panel{display:none;}.panel.active{display:block;}
+
+/* ── TYPOGRAPHY ── */
+.sec-title{
+  font-family:'Cormorant Garamond',serif;font-size:36px;
+  font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.15;
+}
+.sec-sub{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;}
+.body-text{font-size:15px;color:var(--text-body);line-height:1.9;margin-bottom:1.75rem;}
+.divider{border:none;border-top:1px solid var(--border);margin:2.25rem 0;}
+.gold-rule{width:50px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin:1.75rem 0;}
+
+/* ── WEEK GRID ── */
+.week-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:2.25rem;}
+.wk-btn{
+  background:var(--midnight-2);border:1px solid var(--border);
+  padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;
+}
+.wk-btn:hover{border-color:var(--gold-dim);background:var(--navy);}
+.wk-btn.active{border-color:var(--gold);background:rgba(201,168,76,.06);}
+.wk-num{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright);margin-bottom:4px;font-weight:500;}
+.wk-name{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);line-height:1.2;}
+.wk-theme{font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.4;}
+
+/* ── STORY HEADER GRAPHIC ── */
+.story-header{
+  width:100%;height:320px;
+  position:relative;overflow:hidden;
+  margin-bottom:0;
+  border:1px solid var(--border);
+  border-bottom:none;
+}
+.story-header svg{width:100%;height:100%;display:block;}
+/* carbon fiber strip at top of graphic */
+.story-header::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:repeating-linear-gradient(90deg,rgba(201,168,76,.4) 0,rgba(201,168,76,.4) 1px,transparent 1px,transparent 5px);
+  z-index:2;
+}
+/* gold glow line at bottom of graphic */
+.story-header::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.6;z-index:2;
+}
+
+/* ── STORY CARD ── */
+.story-card{
+  background:var(--navy);border:1px solid var(--border);
+  border-top:3px solid var(--gold);margin-bottom:2.5rem;
+  transition:border-color .2s;
+}
+.story-card:hover{border-color:rgba(201,168,76,.4);}
+.story-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem 1.75rem 1rem;
+  border-bottom:1px solid var(--border);
+}
+.story-night{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;}
+.story-ref{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);}
+.story-title{
+  font-family:'Cormorant Garamond',serif;font-size:28px;
+  font-weight:600;color:var(--text);padding:1.2rem 1.75rem .5rem;line-height:1.2;
+}
+.story-body{padding:.5rem 1.75rem 1.75rem;}
+
+/* ── STORY LINES — each line gets its own row with subtle graphic accent ── */
+.story-lines{margin:1rem 0 1.5rem;}
+.story-line{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:10px 0;border-bottom:1px solid rgba(26,42,66,.6);
+  font-size:16px;color:var(--text-body);line-height:1.75;
+}
+.story-line:last-child{border-bottom:none;}
+/* the accent mark per line — tiny gold SVG icon */
+.line-icon{
+  flex-shrink:0;width:22px;height:22px;
+  margin-top:3px;opacity:.7;
+}
+.story-line strong{color:var(--text);}
+.story-line em{color:var(--gold-bright);font-style:italic;}
+
+/* ── VERSE BLOCK ── */
+.verse-block{
+  background:var(--navy-2);border-left:3px solid var(--gold-bright);
+  padding:1.4rem 1.6rem;margin:1.25rem 0;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:20px;color:var(--text);line-height:1.85;
+}
+.verse-block cite{
+  display:block;font-style:normal;font-size:11px;
+  font-family:'Barlow',sans-serif;color:var(--gold-bright);
+  margin-top:10px;letter-spacing:.14em;font-weight:500;
+}
+
+/* ── SAY IT STRIP ── */
+.say-it{
+  background:rgba(201,168,76,.07);
+  border-left:3px solid var(--gold);
+  padding:1rem 1.4rem;margin:1.25rem 0;
+}
+.say-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:.4rem;font-weight:500;}
+.say-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:var(--text-body);}
+
+/* ── PRAYER BLOCK ── */
+.prayer-card{
+  background:var(--midnight-2);border:1px solid var(--border);
+  border-top:2px solid var(--gold-dim);padding:1.5rem;margin:1.5rem 0;
+}
+.prayer-card h4{
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:.9rem;padding-bottom:.7rem;
+  border-bottom:1px solid var(--border);font-weight:500;
+}
+.prayer-card p{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:17px;color:var(--text-body);line-height:1.9;
+}
+.prayer-card cite{
+  display:block;font-style:normal;font-size:12px;
+  font-family:'Barlow',sans-serif;color:var(--text-muted);
+  margin-top:.8rem;
+}
+
+/* ── PROGRESS ── */
+.progress-wrap{margin-bottom:2.25rem;}
+.progress-top{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:8px;}
+.progress-bar{height:3px;background:var(--midnight-3);}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold-bright));transition:width .5s;}
+
+/* ── SEAL ── */
+.seal{
+  text-align:center;padding:3.5rem 1rem;
+  border-top:1px solid var(--border);margin-top:2.5rem;
+}
+.seal p{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:24px;color:var(--text-body);max-width:480px;
+  margin:0 auto 10px;line-height:1.5;
+}
+.seal cite{
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold-bright);font-style:normal;
+  font-family:'Barlow',sans-serif;font-weight:500;
+}
+
+/* ── BACK BUTTON ── */
+.back-btn{
+  background:transparent;border:none;
+  color:var(--text-muted);font-family:'Barlow',sans-serif;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  cursor:pointer;padding:0;margin-bottom:2rem;display:inline-block;
+  transition:color .15s;
+}
+.back-btn:hover{color:var(--gold-bright);}
+
+/* ── ARCHIVE NAV (week overview) ── */
+.archive-intro{
+  padding:2rem 0 1.5rem;
+}
+.archive-intro p{font-size:15px;color:var(--text-body);line-height:1.9;margin-bottom:1.5rem;}
+.week-card{
+  background:var(--navy);border:1px solid var(--border);
+  border-left:3px solid var(--gold-dim);
+  padding:1.5rem 1.75rem;margin-bottom:1rem;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:1.5rem;
+}
+.week-card:hover{border-left-color:var(--gold);background:var(--navy-2);}
+.week-card-num{
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);font-weight:500;flex-shrink:0;width:60px;
+}
+.week-card-content{flex:1;}
+.week-card-name{
+  font-family:'Cormorant Garamond',serif;font-size:22px;
+  color:var(--text);margin-bottom:2px;
+}
+.week-card-theme{font-size:13px;color:var(--text-muted);}
+.week-card-count{font-size:11px;color:var(--gold-bright);letter-spacing:.1em;}
+
+/* ── STORY LIST (inside a week) ── */
+.story-list-item{
+  background:var(--midnight-2);border:1px solid var(--border);
+  padding:1.2rem 1.5rem;margin-bottom:.6rem;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:1.25rem;
+}
+.story-list-item:hover{border-color:var(--gold-dim);background:var(--navy);}
+.sli-night{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);flex-shrink:0;width:70px;font-weight:500;}
+.sli-title{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--text);}
+.sli-ref{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.sli-arrow{color:var(--text-muted);font-size:16px;margin-left:auto;}
+
+/* responsive */
+@media(max-width:600px){
+  .week-grid{grid-template-columns:repeat(2,1fr);}
+  .app{padding:1.5rem 1rem 4rem;}
+  .story-header{height:240px;}
+  .story-title{font-size:22px;}
+  .week-card{flex-direction:column;align-items:flex-start;gap:.5rem;}
+  .week-card-num{width:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover" id="cover">
+  <div>
+    <div class="cover-eyebrow">For Avynn Renee Campbell</div>
+    <h1>The Story<br><em>Archive</em></h1>
+    <div class="cover-rule"></div>
+    <p class="cover-sub">Eight Weeks · Nightly Bible Stories · Made with Love</p>
+    <div class="cover-verse">
+      Train up a child in the way she should go, and when she is old she will not depart from it.
+      <cite>Proverbs 22:6 · CSB</cite>
+    </div>
+    <button class="start-btn" onclick="startApp()">Open the Archive</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   STORY DATA — 8 weeks × 5 nights each
+   ═══════════════════════════════════════════════ */
+const WEEKS = [
+  {
+    name:"In the Beginning",
+    theme:"God creates the world — and creates Avynn",
+    stories:[
+      {
+        night:"Night 1",
+        title:"God Creates the World",
+        ref:"Genesis 1",
+        verse:{text:"In the beginning God created the heavens and the earth.",cite:"Genesis 1:1 · CSB"},
+        color:"#003366",
+        accentColor:"#4FA3FF",
+        headerType:"creation",
+        lines:[
+          {icon:"star", text:"Before anything existed — before the sun, the moon, the animals, before <em>you</em> — there was <strong>God.</strong>"},
+          {icon:"star", text:"And God looked out at nothing at all. Just darkness. Just empty space."},
+          {icon:"light", text:"<em>\"Let there be light!\"</em> He said. And light came blazing into the world like it had been waiting all along."},
+          {icon:"star", text:"He separated the light from the dark — <strong>Day and Night.</strong> He called them both good."},
+          {icon:"water", text:"He pushed the waters apart and sky appeared. He gathered the waters and dry land rose up."},
+          {icon:"leaf", text:"Trees and flowers and every kind of plant burst out of the ground. Every color, every shape — <strong>all His idea.</strong>"},
+          {icon:"star", text:"He put the sun in the sky for daytime. He scattered a million stars across the night for you to look at."},
+          {icon:"fish", text:"He filled the oceans with fish. He filled the sky with birds. He filled the land with every creature imaginable."},
+          {icon:"heart", text:"And then — last of all — He made <em>people.</em> Made them like Himself. Made them to walk with Him."},
+          {icon:"gold", text:"He looked at everything He had made. Every single bit of it. And He said: <strong>\"It is very good.\"</strong>"},
+        ],
+        sayIt:"God made everything — and everything He made is good!",
+        prayer:"God, thank You for making the whole world. Thank You for making the sun and the moon and all the stars. Thank You that You said it was good. And thank You for making me. I love You. Amen."
+      },
+      {
+        night:"Night 2",
+        title:"Noah and the Big Boat",
+        ref:"Genesis 6–8",
+        verse:{text:"God remembered Noah.",cite:"Genesis 8:1 · CSB"},
+        color:"#002244",
+        accentColor:"#40AAFF",
+        headerType:"ark",
+        lines:[
+          {icon:"rain", text:"A long time ago, the world had gotten very sad. People had forgotten about God and were doing bad things."},
+          {icon:"heart", text:"But one man still loved God with his whole heart. His name was <strong>Noah.</strong>"},
+          {icon:"wood", text:"God said, <em>\"Build Me a big boat, Noah — bigger than anything you've ever seen.\"</em> And Noah obeyed."},
+          {icon:"animals", text:"God told Noah to bring two of every animal onto the boat. Can you imagine? Two elephants! Two giraffes! Two of everything!"},
+          {icon:"rain", text:"Then the rain came. <strong>Forty days and forty nights</strong> of pouring, splashing, rushing rain."},
+          {icon:"water", text:"The whole earth was covered with water. But Noah and his family — and all those animals — were <em>safe on the boat.</em>"},
+          {icon:"star", text:"Then one day the rain stopped. Slowly, slowly, the water went down."},
+          {icon:"dove", text:"Noah sent out a dove. The dove came back with an <strong>olive leaf.</strong> Land!"},
+          {icon:"rainbow", text:"They stepped off the boat. And God put a beautiful rainbow in the sky. <em>\"I will never flood the whole earth again,\"</em> He promised."},
+          {icon:"heart", text:"Every time you see a rainbow, Avynn — that's <strong>God's promise</strong> painted across the sky."},
+        ],
+        sayIt:"God remembered Noah — and God always remembers me!",
+        prayer:"God, thank You for keeping Noah safe on the big boat. Thank You that You always keep Your promises. When I see a rainbow, help me remember that You love me. Amen."
+      },
+      {
+        night:"Night 3",
+        title:"Baby Moses in the Basket",
+        ref:"Exodus 2",
+        verse:{text:"When she saw that he was a beautiful child, she hid him for three months.",cite:"Exodus 2:2 · CSB"},
+        color:"#0A2830",
+        accentColor:"#00CCAA",
+        headerType:"moses_baby",
+        lines:[
+          {icon:"heart", text:"A mama had a baby boy. And from the very first moment she saw him, she loved him <em>completely.</em>"},
+          {icon:"star", text:"His name was <strong>Moses.</strong> And he was so beautiful and so perfect."},
+          {icon:"water", text:"The mama made a little basket out of reeds — like a tiny boat. She put soft blankets inside."},
+          {icon:"heart", text:"She held her baby close one last time. She kissed him. She prayed over him. <em>\"God, protect this little boy.\"</em>"},
+          {icon:"water", text:"She placed the basket in the river. She watched it float away. <strong>Her heart was breaking and trusting at the same time.</strong>"},
+          {icon:"eye", text:"Moses' big sister Miriam hid nearby and watched. She was not going to let her little brother float away alone."},
+          {icon:"crown", text:"A princess came to the river. She heard crying. She opened the basket and saw the baby — and her heart melted."},
+          {icon:"star", text:"<em>\"This must be a Hebrew baby,\"</em> she said. And she decided right then — <strong>\"I will save him.\"</strong>"},
+          {icon:"heart", text:"Miriam ran up and said, <em>\"Should I find someone to take care of him?\"</em> The princess said yes. And Miriam brought the baby's own mama!"},
+          {icon:"gold", text:"God put Moses right back in his mama's arms. <strong>God saw that baby floating in that basket. And He had a plan.</strong>"},
+        ],
+        sayIt:"God watched over Moses — and God watches over me!",
+        prayer:"God, You watched over little baby Moses in that basket on the river. Thank You that You watch over me too. Even when things feel scary, You always have a plan. Amen."
+      },
+      {
+        night:"Night 4",
+        title:"The Burning Bush",
+        ref:"Exodus 3–4",
+        verse:{text:"I will be with you.",cite:"Exodus 3:12 · CSB"},
+        color:"#1A0800",
+        accentColor:"#FF8C00",
+        headerType:"bush",
+        lines:[
+          {icon:"sheep", text:"Moses had grown up into a man. He lived in the desert, taking care of sheep under the big hot sun."},
+          {icon:"fire", text:"One day he saw something strange — a bush was on <em>fire.</em> Blazing, golden, beautiful flames."},
+          {icon:"fire", text:"But here was the amazing thing: <strong>the bush wasn't burning up.</strong> The fire just kept burning and burning."},
+          {icon:"eye", text:"Moses walked closer. He had to see this. He had never seen anything like it in his whole life."},
+          {icon:"star", text:"Then — right from inside the fire — a voice spoke. <em>\"Moses! Moses!\"</em>"},
+          {icon:"heart", text:"Moses stopped. <strong>God knew his name.</strong> God had been watching him all along."},
+          {icon:"sandal", text:"<em>\"Take off your sandals,\"</em> God said. <em>\"The ground where you are standing is holy ground.\"</em>"},
+          {icon:"star", text:"Then God told Moses: <em>\"I have seen My people hurting in Egypt. I have heard them crying. I am sending <strong>you</strong> to help them.\"</em>"},
+          {icon:"heart", text:"Moses was scared. <em>\"But who am I?\"</em> he asked. And God said the most important thing:"},
+          {icon:"gold", text:"<strong>\"I will be with you.\"</strong> That was enough. God knows your name too, Avynn. And He is always with you."},
+        ],
+        sayIt:"God said 'I will be with you!' — and that's enough!",
+        prayer:"God, thank You for calling Moses by name and meeting him right where he was. Thank You that You know my name too. Wherever I go, You go with me. I love You. Amen."
+      },
+      {
+        night:"Night 5",
+        title:"Crossing the Red Sea",
+        ref:"Exodus 14",
+        verse:{text:"The Lord will fight for you; you need only to be still.",cite:"Exodus 14:14 · CSB"},
+        color:"#001830",
+        accentColor:"#00BBFF",
+        headerType:"red_sea",
+        lines:[
+          {icon:"people", text:"Moses led God's people out of Egypt. They were finally <em>free!</em> But then they hit a problem."},
+          {icon:"water", text:"The Red Sea was right in front of them — huge, deep, and wide. <strong>No way across.</strong>"},
+          {icon:"army", text:"And behind them? Pharaoh's whole army was charging. Chariots and horses and soldiers."},
+          {icon:"fear", text:"The people were terrified. <em>\"What do we do?! We're trapped!\"</em>"},
+          {icon:"heart", text:"But Moses stood up tall. <em>\"Do not be afraid! Stand firm and watch what God will do!\"</em>"},
+          {icon:"staff", text:"God told Moses to raise his staff over the water. Moses walked to the edge and stretched it out over those dark waves."},
+          {icon:"wind", text:"<strong>WHOOSH!</strong> A mighty wind blew all night. The water moved. It pushed. It split apart."},
+          {icon:"water", text:"Two <strong>giant walls of water</strong> stood up on each side — and right down the middle was dry ground!"},
+          {icon:"people", text:"Every single person walked right through. Children, mamas, dads, grandparents — <em>all safe on dry ground.</em>"},
+          {icon:"gold", text:"When they reached the other side, Moses' sister Miriam grabbed her tambourine and <strong>danced and sang</strong> — because God had made a way!"},
+        ],
+        sayIt:"God made a way — He can always make a way for me!",
+        prayer:"Lord, thank You for making a way through the Red Sea. Thank You that when things seem impossible, You can do anything. Help me trust You even when I'm scared. Amen."
+      },
+    ]
+  },
+  {
+    name:"Bold and Brave",
+    theme:"God gives courage to ordinary people",
+    stories:[
+      {
+        night:"Night 1",
+        title:"Joshua and the Walls of Jericho",
+        ref:"Joshua 6",
+        verse:{text:"Be strong and courageous.",cite:"Joshua 1:9 · CSB"},
+        color:"#1A1000",
+        accentColor:"#FFB800",
+        headerType:"jericho",
+        lines:[
+          {icon:"wall", text:"God's people finally reached the Promised Land. But there was a problem — a huge city called Jericho with <strong>giant walls.</strong>"},
+          {icon:"star", text:"God told Joshua exactly what to do. And it was the strangest battle plan anyone had ever heard."},
+          {icon:"walk", text:"<em>\"March around the city once every day for six days.\"</em> Just walk. No fighting. Just walk around the walls."},
+          {icon:"heart", text:"Joshua trusted God. Even though it seemed strange. Even though the people of Jericho were probably watching and laughing."},
+          {icon:"walk", text:"Day one — march. Day two — march. Day three, four, five, six — <strong>march.</strong> Every day, trusting God."},
+          {icon:"star", text:"Day seven was different. They marched around <em>seven times.</em> The priests blew their horns. The people were silent, waiting."},
+          {icon:"horn", text:"Then Joshua said: <em>\"Shout! For the Lord has given you the city!\"</em>"},
+          {icon:"gold", text:"The people shouted with everything they had. And <strong>the walls came tumbling down.</strong>"},
+          {icon:"heart", text:"No swords did that. No army. Just obedience and a shout. <em>God did it.</em>"},
+          {icon:"star", text:"When God gives you a strange instruction, Avynn — obey it anyway. <strong>God's plans always work.</strong>"},
+        ],
+        sayIt:"When God says go — I go! When God says shout — I shout!",
+        prayer:"God, thank You for giving Joshua courage even when the battle plan seemed strange. Help me trust You even when I don't understand. I know Your plans always work. Amen."
+      },
+      {
+        night:"Night 2",
+        title:"Gideon's Tiny Army",
+        ref:"Judges 7",
+        verse:{text:"The Lord is with you, valiant warrior.",cite:"Judges 6:12 · CSB"},
+        color:"#0A0A00",
+        accentColor:"#FFD700",
+        headerType:"gideon",
+        lines:[
+          {icon:"star", text:"Gideon didn't feel like a warrior. He was hiding when God found him and said, <em>\"The Lord is with you, valiant warrior.\"</em>"},
+          {icon:"heart", text:"Gideon was confused. <em>\"Me? I'm the least person in the smallest family in the weakest tribe.\"</em>"},
+          {icon:"gold", text:"But God said: <strong>\"I will be with you.\"</strong> And that changes everything."},
+          {icon:"people", text:"Gideon gathered an army of 32,000 men. God said — <em>too many.</em>"},
+          {icon:"water", text:"God kept making the army smaller and smaller until only <strong>300 men</strong> remained. Against thousands of enemies."},
+          {icon:"star", text:"300 men. No swords. Just <strong>torches, clay jars, and trumpets.</strong> That was the plan."},
+          {icon:"horn", text:"In the middle of the night they surrounded the camp. They smashed their jars. Waved their torches. Blew their trumpets."},
+          {icon:"gold", text:"<strong>The enemy ran away in confusion!</strong> God made 300 men into an unstoppable force."},
+          {icon:"heart", text:"Why the small army? So nobody could say — <em>\"We did it ourselves.\"</em> God wanted all the glory."},
+          {icon:"star", text:"You don't have to be the biggest or the strongest, Avynn. You just have to be <em>willing.</em> God does the rest."},
+        ],
+        sayIt:"I don't have to be the biggest — God is strong through me!",
+        prayer:"God, You took Gideon — who felt small and afraid — and made him into a warrior. You can do the same for me. Help me be brave and willing. Amen."
+      },
+      {
+        night:"Night 3",
+        title:"Ruth's Loyal Love",
+        ref:"Ruth 1",
+        verse:{text:"Where you go I will go, and where you stay I will stay.",cite:"Ruth 1:16 · CSB"},
+        color:"#0A1A08",
+        accentColor:"#60CC60",
+        headerType:"ruth",
+        lines:[
+          {icon:"heart", text:"Naomi was a woman who had lost almost everything. Her husband. Her sons. She had nothing left but sadness."},
+          {icon:"walk", text:"She told her daughters-in-law to go home to their own families. <em>\"Start over. Find new husbands. I have nothing to give you.\"</em>"},
+          {icon:"heart", text:"One daughter-in-law kissed her goodbye and left. But <strong>Ruth stayed.</strong>"},
+          {icon:"gold", text:"Ruth said the most beautiful thing: <em>\"Where you go, I will go. Where you live, I will live. Your people will be my people. Your God will be my God.\"</em>"},
+          {icon:"walk", text:"So they walked together — the old woman and the young woman — into an uncertain future."},
+          {icon:"wheat", text:"Ruth went out into the fields to pick up leftover grain so they could eat. She worked hard from morning until evening."},
+          {icon:"star", text:"The man who owned the field saw her. His name was Boaz. He had heard about her loyalty to Naomi — and he was <strong>moved.</strong>"},
+          {icon:"heart", text:"Boaz was kind to Ruth. He made sure she had food and water and protection. <em>Because she had been kind to Naomi.</em>"},
+          {icon:"gold", text:"In the end, Boaz and Ruth got married. Naomi had a family again. God had been working the whole time."},
+          {icon:"star", text:"Your loyalty matters, Avynn. When you choose to stay and love someone — <strong>God sees it.</strong>"},
+        ],
+        sayIt:"Real love stays — and God sees every bit of it!",
+        prayer:"God, Ruth chose to stay even when it was hard. Help me love the people in my life the way Ruth loved Naomi — steady and loyal no matter what. Amen."
+      },
+      {
+        night:"Night 4",
+        title:"David and the Giant",
+        ref:"1 Samuel 17",
+        verse:{text:"The battle is the Lord's.",cite:"1 Samuel 17:47 · CSB"},
+        color:"#100A00",
+        accentColor:"#FF8800",
+        headerType:"david",
+        lines:[
+          {icon:"giant", text:"There was a giant named Goliath. Nine feet tall. Armor head to toe. <strong>He was terrifying.</strong>"},
+          {icon:"fear", text:"Every soldier in Israel's army was afraid. Nobody would face him. For forty days, Goliath shouted and nobody moved."},
+          {icon:"heart", text:"Then a shepherd boy showed up — bringing lunch for his brothers. His name was <strong>David.</strong>"},
+          {icon:"star", text:"David heard Goliath shouting. And instead of fear, David felt something else: <em>How dare this man speak against God's people?</em>"},
+          {icon:"staff", text:"<em>\"I will fight him,\"</em> David said. Everyone laughed. He was just a boy. No armor. No sword."},
+          {icon:"heart", text:"David said: <em>\"God protected me from lions and bears when I watched my sheep. He will protect me from this giant too.\"</em>"},
+          {icon:"stone", text:"Five smooth stones. A sling. And a boy who knew that <strong>the battle belongs to God.</strong>"},
+          {icon:"gold", text:"He ran toward the giant — not away from him. He swung his sling. The stone flew. <strong>Goliath fell.</strong>"},
+          {icon:"star", text:"One boy. Five stones. An unshakeable trust in God. <em>That was enough.</em>"},
+          {icon:"heart", text:"The giants in your life, Avynn — they look big. But your God is <strong>so much bigger.</strong> Run toward them."},
+        ],
+        sayIt:"My God is bigger than any giant I'll ever face!",
+        prayer:"God, David wasn't afraid because he knew You were with him. Help me remember that when something feels scary and big — You are bigger. The battle is Yours. Amen."
+      },
+      {
+        night:"Night 5",
+        title:"Esther's Brave Choice",
+        ref:"Esther 4",
+        verse:{text:"Who knows if perhaps you were made queen for just such a time as this?",cite:"Esther 4:14 · CSB"},
+        color:"#1A0010",
+        accentColor:"#CC44AA",
+        headerType:"esther",
+        lines:[
+          {icon:"crown", text:"A young Jewish girl named Esther became queen of a great empire. But nobody at the palace knew she was Jewish."},
+          {icon:"heart", text:"Her uncle Mordecai loved her like a daughter. He had raised her after her parents died."},
+          {icon:"star", text:"A powerful man in the palace named Haman hated Mordecai — and he made a terrible plan to hurt all of Esther's people."},
+          {icon:"fear", text:"Mordecai told Esther she had to go speak to the king. But going to the king uninvited could <strong>cost her her life.</strong>"},
+          {icon:"heart", text:"Esther was scared. But Mordecai said: <em>\"Who knows if perhaps you were made queen for just such a time as this?\"</em>"},
+          {icon:"star", text:"Esther made a brave choice. <em>\"If I perish, I perish,\"</em> she said. <strong>She went to the king.</strong>"},
+          {icon:"crown", text:"The king welcomed her. God had prepared the way before she even walked in."},
+          {icon:"gold", text:"Esther spoke the truth. She asked the king to save her people. <strong>And he did.</strong>"},
+          {icon:"heart", text:"The whole plan of evil was reversed. God's people were protected. And it happened because <em>one brave girl said yes.</em>"},
+          {icon:"star", text:"You were made for just such a time as this, Avynn. <strong>God put you here on purpose.</strong>"},
+        ],
+        sayIt:"I was made for this moment — God put me here on purpose!",
+        prayer:"God, Esther was brave even when she was scared. Help me be brave too. Help me know that You put me in my life for a reason — and that You'll be with me when I say yes. Amen."
+      },
+    ]
+  },
+  {
+    name:"Jesus Arrives",
+    theme:"The Son of God comes — and everything changes",
+    stories:[
+      {
+        night:"Night 1",
+        title:"The Angel Visits Mary",
+        ref:"Luke 1",
+        verse:{text:"Nothing will be impossible with God.",cite:"Luke 1:37 · CSB"},
+        color:"#0A0A1A",
+        accentColor:"#8888FF",
+        headerType:"mary",
+        lines:[
+          {icon:"star", text:"A young woman named Mary was living her ordinary life in a small town called Nazareth."},
+          {icon:"light", text:"Then an angel appeared to her. Not a tiny sweet angel — a <strong>glorious, holy, sent-from-God angel.</strong>"},
+          {icon:"fear", text:"Mary was frightened. But the angel said: <em>\"Do not be afraid, Mary. God has chosen you for something wonderful.\"</em>"},
+          {icon:"heart", text:"<em>\"You are going to have a baby boy,\"</em> the angel said. <em>\"And His name will be Jesus. He will be the Son of God.\"</em>"},
+          {icon:"star", text:"Mary had so many questions. This had never happened to anyone before in the history of the world."},
+          {icon:"gold", text:"But the angel said: <strong>\"Nothing will be impossible with God.\"</strong>"},
+          {icon:"heart", text:"Mary took a big breath. And she said the most beautiful thing: <em>\"I am the Lord's servant. Let it be just as you said.\"</em>"},
+          {icon:"star", text:"She didn't understand everything. She was probably still scared. But she <strong>said yes to God.</strong>"},
+          {icon:"heart", text:"That yes changed everything. That yes brought Jesus into the world."},
+          {icon:"gold", text:"When God asks something of you, Avynn — you can say yes too. Because <strong>nothing is impossible with God.</strong>"},
+        ],
+        sayIt:"Nothing is impossible with God — I can say yes!",
+        prayer:"God, Mary said yes even when she didn't understand everything. Help me trust You like that. Help me say yes when You ask me to do something — even if it seems impossible. Amen."
+      },
+      {
+        night:"Night 2",
+        title:"Jesus Is Born",
+        ref:"Luke 2",
+        verse:{text:"Today in the city of David a Savior was born for you, who is the Messiah, the Lord.",cite:"Luke 2:11 · CSB"},
+        color:"#0A0A00",
+        accentColor:"#FFD700",
+        headerType:"nativity",
+        lines:[
+          {icon:"walk", text:"Mary and Joseph traveled a long, long way to a city called Bethlehem. The roads were dusty. Mary was very pregnant."},
+          {icon:"star", text:"When they finally arrived — <strong>no room.</strong> Every place was full. There was nowhere for them to stay."},
+          {icon:"heart", text:"Except for a stable. Where the animals were kept. Not a palace. Not a fancy room. <em>A stable.</em>"},
+          {icon:"heart", text:"And there — surrounded by hay and animals and the smell of the earth — <strong>Jesus was born.</strong>"},
+          {icon:"star", text:"The very Son of God. Wrapped in cloth. Lying in a manger where the animals ate their food."},
+          {icon:"light", text:"Out in the fields, shepherds were watching their sheep. Suddenly — <em>angels.</em> Everywhere. The whole sky lit up."},
+          {icon:"horn", text:"<em>\"Do not be afraid!\"</em> the angels said. <em>\"A Savior has been born tonight — Jesus the Lord!\"</em>"},
+          {icon:"walk", text:"The shepherds ran to Bethlehem as fast as they could. And they found exactly what the angels had said."},
+          {icon:"heart", text:"They knelt down in front of a baby in a manger. <strong>God had come to earth as a tiny baby.</strong>"},
+          {icon:"gold", text:"He didn't come as a king with a crown. He came as a baby who needed to be held. <em>Because He wanted to be close to us.</em>"},
+        ],
+        sayIt:"Jesus came for me — God wanted to be close to me!",
+        prayer:"Jesus, thank You for coming. Thank You that You didn't stay far away — You came right here, to earth, as a baby, because You love us so much. I love You. Amen."
+      },
+      {
+        night:"Night 3",
+        title:"The Wise Men Follow the Star",
+        ref:"Matthew 2",
+        verse:{text:"Where is he who has been born king of the Jews? For we saw his star at its rising and have come to worship him.",cite:"Matthew 2:2 · CSB"},
+        color:"#060A18",
+        accentColor:"#FFB800",
+        headerType:"wisemen",
+        lines:[
+          {icon:"star", text:"Far, far away — in lands east of Bethlehem — wise men were studying the night sky."},
+          {icon:"star", text:"They saw a <strong>new star.</strong> A star that hadn't been there before. Blazing bright, pointing somewhere."},
+          {icon:"heart", text:"They knew what it meant. A great king had been born. And they wanted to go and worship Him."},
+          {icon:"camel", text:"So they packed their finest gifts and got on their camels and set off on a very long journey. <em>They didn't know exactly where they were going. They just followed the star.</em>"},
+          {icon:"star", text:"The star moved ahead of them, night after night, leading them forward."},
+          {icon:"heart", text:"<strong>They kept going.</strong> Miles and miles. Week after week. Following a star to a King."},
+          {icon:"gold", text:"And the star stopped. Right over the place where Jesus was."},
+          {icon:"heart", text:"They went inside. They saw the child. And they fell to their knees and <em>worshiped Him.</em>"},
+          {icon:"gold", text:"They gave their finest treasures — gold, frankincense, and myrrh. Their very best, for the King of kings."},
+          {icon:"star", text:"You can follow Jesus too, Avynn. Just like those wise men did — <strong>wherever He leads, keep going.</strong>"},
+        ],
+        sayIt:"I will follow Jesus wherever He leads — just like the wise men!",
+        prayer:"Jesus, the wise men followed a star for miles and miles just to worship You. I want to be like them. Help me follow You every day, even when the road is long. Amen."
+      },
+      {
+        night:"Night 4",
+        title:"Jesus Is Baptized",
+        ref:"Matthew 3",
+        verse:{text:"This is my beloved Son, with whom I am well pleased.",cite:"Matthew 3:17 · CSB"},
+        color:"#001A20",
+        accentColor:"#00CCEE",
+        headerType:"baptism",
+        lines:[
+          {icon:"water", text:"Jesus grew up. And when the time was right, He went to the Jordan River to be baptized by His cousin John."},
+          {icon:"heart", text:"John had been telling everyone — <em>\"Someone is coming who is much greater than me. Get ready for Him!\"</em>"},
+          {icon:"star", text:"When Jesus walked up, John was amazed. <em>\"You should be baptizing me,\"</em> John said. <em>\"Not the other way around.\"</em>"},
+          {icon:"heart", text:"But Jesus said — <em>\"This is what needs to happen. This is right.\"</em> And John obeyed."},
+          {icon:"water", text:"Jesus went down into the water. And when He came up —"},
+          {icon:"dove", text:"<strong>A dove came down from the sky</strong> and rested on Him. The Holy Spirit, like a dove."},
+          {icon:"light", text:"And a voice came from heaven. The voice of God the Father. <em>Loud and clear and full of love.</em>"},
+          {icon:"gold", text:"<strong>\"This is My beloved Son, with whom I am well pleased.\"</strong>"},
+          {icon:"heart", text:"Father. Son. Holy Spirit. All three — together at the river. The whole Trinity present in one moment."},
+          {icon:"star", text:"God says that about you too, Avynn — because Jesus is in you. <em>\"This is My beloved child.\"</em>"},
+        ],
+        sayIt:"I am God's beloved child — He is so pleased with me!",
+        prayer:"God, You called Jesus Your beloved Son. Thank You that when I belong to Jesus, You call me Your beloved child too. Help me live like someone who is loved like that. Amen."
+      },
+      {
+        night:"Night 5",
+        title:"Jesus Calms the Storm",
+        ref:"Mark 4",
+        verse:{text:"Why are you afraid? Do you still have no faith?",cite:"Mark 4:40 · CSB"},
+        color:"#000814",
+        accentColor:"#4488FF",
+        headerType:"storm",
+        lines:[
+          {icon:"water", text:"Jesus and His disciples got into a boat to cross the sea. The water was calm. Everything seemed fine."},
+          {icon:"heart", text:"Jesus was so tired. He went to the back of the boat, put His head on a pillow, and <em>fell asleep.</em>"},
+          {icon:"wind", text:"Then — out of nowhere — a huge storm hit. Waves crashing over the sides. Thunder. Lightning. The boat was filling with water."},
+          {icon:"fear", text:"The disciples were <strong>terrified.</strong> These were fishermen — men who knew the sea. And they were scared."},
+          {icon:"heart", text:"They woke Jesus up. <em>\"Teacher! Don't You care that we're about to die?!\"</em>"},
+          {icon:"star", text:"Jesus stood up in the boat. Waves rocking everything. Wind howling. And He looked at the storm."},
+          {icon:"gold", text:"<em>\"Quiet! Be still!\"</em> He said to the wind and the waves. <strong>And they obeyed Him.</strong>"},
+          {icon:"star", text:"Immediate calm. Not gradual. <em>Immediate.</em> Complete silence on the water. The storm just — stopped."},
+          {icon:"heart", text:"Jesus looked at His disciples: <em>\"Why are you afraid? Do you still have no faith?\"</em>"},
+          {icon:"gold", text:"When your storms feel big, Avynn — Jesus is in the boat with you. And He can say <strong>\"Be still\"</strong> to anything."},
+        ],
+        sayIt:"Jesus is in my boat — He can calm any storm!",
+        prayer:"Jesus, You calmed the wind and the waves with just Your voice. When I feel scared and the storm feels too big, remind me that You are right here. You've got this. Amen."
+      },
+    ]
+  },
+  {
+    name:"Jesus Heals",
+    theme:"Blind eyes see, lame legs walk, hearts are made whole",
+    stories:[
+      { night:"Night 1", title:"The Man Through the Roof", ref:"Mark 2", verse:{text:"Son, your sins are forgiven.",cite:"Mark 2:5 · CSB"}, color:"#1A0A00", accentColor:"#FF8800", headerType:"roof", lines:[{icon:"heart",text:"Four friends had a friend who couldn't walk. He'd been lying on a mat for years."},{icon:"people",text:"They heard Jesus was in a house nearby. So they picked up their friend — mat and all — and carried him."},{icon:"walk",text:"The house was so packed with people they couldn't even get to the door. No way in."},{icon:"star",text:"But these friends didn't give up. They climbed up on the <strong>roof.</strong>"},{icon:"gold",text:"They <em>dug through the roof</em> and lowered their friend down on his mat, right in front of Jesus."},{icon:"heart",text:"Jesus looked up. He saw their faith. And He was moved."},{icon:"star",text:"<em>\"Son, your sins are forgiven,\"</em> Jesus said. Then: <strong>\"Get up, pick up your mat, and go home.\"</strong>"},{icon:"gold",text:"The man <em>got up.</em> Picked up his mat. Walked home. The crowd was amazed."},{icon:"heart",text:"Those friends refused to let anything stop them from getting their friend to Jesus."},{icon:"star",text:"That's the kind of friend to be, Avynn — and that's the kind of faith to have. <strong>Get your people to Jesus.</strong>"}], sayIt:"Good friends bring each other to Jesus — no matter what it takes!", prayer:"Jesus, those four friends refused to give up. Help me have faith like that — and help me be a friend who brings people to You. Amen." },
+      { night:"Night 2", title:"Blind Bartimaeus", ref:"Mark 10", verse:{text:"What do you want me to do for you?",cite:"Mark 10:51 · CSB"}, color:"#080808", accentColor:"#FFEE66", headerType:"bartimaeus", lines:[{icon:"eye",text:"A blind man named Bartimaeus sat by the road every day, begging. He couldn't see anything."},{icon:"people",text:"One day he heard a crowd coming. <em>\"What's happening?\"</em> he asked. Someone said: <strong>Jesus of Nazareth is passing by.</strong>"},{icon:"heart",text:"Bartimaeus didn't hesitate. He shouted as loud as he could — <em>\"Jesus! Have mercy on me!\"</em>"},{icon:"star",text:"People around him told him to be quiet. <strong>He shouted louder.</strong>"},{icon:"heart",text:"Jesus stopped. <em>\"Call him over,\"</em> He said."},{icon:"gold",text:"Bartimaeus jumped up and went to Jesus. Jesus asked him the most tender question: <em>\"What do you want Me to do for you?\"</em>"},{icon:"eye",text:"<em>\"I want to see,\"</em> Bartimaeus said. And immediately — <strong>he could.</strong>"},{icon:"heart",text:"Jesus said: <em>\"Go, your faith has saved you.\"</em> And Bartimaeus followed Jesus down the road."},{icon:"star",text:"He didn't let anyone quiet him down. He kept calling out to Jesus until Jesus stopped."},{icon:"gold",text:"You can do that too, Avynn. <strong>Keep calling out to Jesus. He always stops for you.</strong>"}], sayIt:"Jesus always stops for me — I can call out to Him anytime!", prayer:"Jesus, Bartimaeus kept calling even when people told him to be quiet. Help me never stop calling out to You. Thank You that You always stop and listen. Amen." },
+      { night:"Night 3", title:"The Little Girl Jesus Raised", ref:"Mark 5", verse:{text:"Little girl, I say to you, get up!",cite:"Mark 5:41 · CSB"}, color:"#0A0A18", accentColor:"#AA88FF", headerType:"little_girl", lines:[{icon:"heart",text:"A man named Jairus was desperate. His little daughter was very, very sick."},{icon:"walk",text:"He ran to find Jesus and fell at His feet. <em>\"Please come. Please help her. She's only twelve years old.\"</em>"},{icon:"heart",text:"Jesus went with him. But on the way, news came: <em>\"Don't bother the teacher anymore. Your daughter is gone.\"</em>"},{icon:"star",text:"Jesus heard it. He looked at Jairus. And He said: <em>\"Don't be afraid. Just believe.\"</em>"},{icon:"walk",text:"They kept going."},{icon:"heart",text:"When they got to the house, people were crying and wailing. Jesus said, <em>\"Why all this sadness? She isn't dead — she's only sleeping.\"</em>"},{icon:"star",text:"People laughed at Him. But Jesus went inside. He went to the little girl. He took her hand."},{icon:"gold",text:"<strong>\"Little girl, I say to you, get up.\"</strong>"},{icon:"heart",text:"And she did. Immediately. She stood up and started walking around. Everyone was completely astonished."},{icon:"star",text:"Jesus is not afraid of anything, Avynn — not even the very worst things. <strong>He can always say \"get up\" and make it so.</strong>"}], sayIt:"Jesus is not afraid of anything — He makes a way every time!", prayer:"Jesus, You weren't afraid even when everyone else gave up. Thank You that nothing is too hard for You. When things feel hopeless, remind me that You can always say 'get up.' Amen." },
+      { night:"Night 4", title:"Jesus Feeds Five Thousand", ref:"John 6", verse:{text:"Gather the leftovers so that nothing is wasted.",cite:"John 6:12 · CSB"}, color:"#0A1400", accentColor:"#88DD44", headerType:"loaves", lines:[{icon:"people",text:"A huge crowd had followed Jesus out to a hillside to hear Him teach. Five thousand people — at least."},{icon:"heart",text:"It got late. The disciples were worried. <em>\"These people are hungry and there's nowhere to buy food out here.\"</em>"},{icon:"star",text:"Jesus looked at His disciples. <em>\"You give them something to eat,\"</em> He said."},{icon:"people",text:"<em>\"Us?! We don't have nearly enough money for that.\"</em>"},{icon:"bread",text:"But a little boy in the crowd had his lunch: <strong>five small loaves of bread and two little fish.</strong> That was all."},{icon:"heart",text:"The little boy gave Jesus everything he had. He didn't hold back. He just handed it over."},{icon:"gold",text:"Jesus took the food. He looked up to heaven. He gave thanks. And He started breaking it apart and handing it out."},{icon:"bread",text:"<strong>Everyone ate.</strong> Every single person. Five thousand people — and they ate until they were full."},{icon:"heart",text:"Twelve baskets of leftovers. From five loaves and two fish. <em>Twelve full baskets left over.</em>"},{icon:"star",text:"When you give Jesus what you have — even if it seems small — <strong>He makes it more than enough.</strong>"}], sayIt:"When I give Jesus what I have, He makes it more than enough!", prayer:"Jesus, a little boy gave You his small lunch and You fed thousands of people. Help me always give You what I have and trust You to do amazing things with it. Amen." },
+      { night:"Night 5", title:"Jesus Walks on Water", ref:"Matthew 14", verse:{text:"Take courage! It is I. Don't be afraid.",cite:"Matthew 14:27 · CSB"}, color:"#000A18", accentColor:"#2288FF", headerType:"water_walk", lines:[{icon:"water",text:"Jesus sent His disciples ahead in a boat while He went up the mountain alone to pray."},{icon:"wind",text:"In the middle of the night, a huge storm blew in. Waves pounding. Wind howling. The disciples were fighting to keep the boat afloat."},{icon:"light",text:"Then they saw something — <em>a figure, walking on top of the water toward them.</em>"},{icon:"fear",text:"<strong>They screamed.</strong> <em>\"It's a ghost!\"</em>"},{icon:"heart",text:"But then they heard a voice — <em>\"Take courage! It is I. Don't be afraid.\"</em>"},{icon:"star",text:"<strong>Peter</strong> — the boldest of the disciples — said: <em>\"Lord, if it's You, tell me to come to You on the water.\"</em>"},{icon:"gold",text:"Jesus said: <em>\"Come.\"</em> And Peter got out of the boat."},{icon:"water",text:"Peter walked on the water. <em>Actually walked on it.</em> Toward Jesus. For a moment, it worked."},{icon:"fear",text:"Then Peter looked at the waves. He felt the wind. He got scared. And he started to sink."},{icon:"heart",text:"<em>\"Lord, save me!\"</em> he cried. And immediately Jesus grabbed his hand. <strong>\"Why did you doubt?\"</strong> Avynn — keep your eyes on Jesus, not the waves."}], sayIt:"Eyes on Jesus — not on the waves!", prayer:"Jesus, Peter walked on water until he looked at the storm instead of You. Help me keep my eyes on You — especially when the waves feel scary. You're right there. Amen." },
+    ]
+  },
+  {
+    name:"The Cross and the Empty Tomb",
+    theme:"The greatest story ever told — love wins",
+    stories:[
+      { night:"Night 1", title:"The Last Supper", ref:"Matthew 26", verse:{text:"This is my body, which is given for you. Do this in remembrance of me.",cite:"Luke 22:19 · CSB"}, color:"#100A00", accentColor:"#CC8822", headerType:"supper", lines:[{icon:"heart",text:"It was the night before everything would change. Jesus gathered His twelve closest friends for one last meal."},{icon:"people",text:"They sat together around the table. Bread. Wine. The smell of food. Friends."},{icon:"heart",text:"Jesus knew what was coming. <em>He knew.</em> And He still chose to stay."},{icon:"bread",text:"He took the bread. Broke it. Looked at His friends. <em>\"This is My body — given for you. Every time you eat together, remember Me.\"</em>"},{icon:"water",text:"He took the cup of wine. <em>\"This is My blood — poured out for many, for the forgiveness of sins.\"</em>"},{icon:"heart",text:"They sang a song together. Then they walked out into the night."},{icon:"star",text:"Jesus knew Judas would betray Him. He knew Peter would deny Him. He knew His disciples would run away."},{icon:"heart",text:"<strong>And He loved them anyway.</strong> Completely. To the end."},{icon:"gold",text:"That's the kind of love Jesus has for you, Avynn — He knows everything about you. And <em>He loves you anyway.</em>"},{icon:"star",text:"Every time we take communion, we remember: <strong>He gave everything for us. Willingly. For love.</strong>"}], sayIt:"Jesus gave everything for me — because He loves me completely!", prayer:"Jesus, You knew what was coming and You chose to go through with it — for me. Thank You. Help me never forget what that meal meant. You love me all the way. Amen." },
+      { night:"Night 2", title:"The Garden of Gethsemane", ref:"Luke 22", verse:{text:"Not my will, but yours, be done.",cite:"Luke 22:42 · CSB"}, color:"#080A10", accentColor:"#6666AA", headerType:"garden", lines:[{icon:"walk",text:"After the supper, Jesus walked with His disciples to a garden called Gethsemane."},{icon:"heart",text:"He left most of them near the entrance. He took Peter and James and John a little further in."},{icon:"heart",text:"Then He went a little further alone. And He knelt down. And He prayed."},{icon:"star",text:"<em>\"Father — if it's possible, let this cup pass from Me.\"</em> Jesus was in real pain. Real sorrow."},{icon:"heart",text:"This was the moment. The full weight of every sin ever committed — His to carry. He felt it."},{icon:"gold",text:"But then — the most important words: <em>\"Not My will, but Yours, be done.\"</em>"},{icon:"light",text:"An angel came from heaven and strengthened Him. God sent help."},{icon:"star",text:"Jesus prayed so hard that His sweat became like drops of blood. That's how heavy it was."},{icon:"heart",text:"When Judas came with soldiers to arrest Him, Jesus didn't run. He stood up and walked toward them."},{icon:"gold",text:"He had already said yes. <strong>\"Not My will — Yours.\"</strong> That surrender changed the whole world."}], sayIt:"'Not my will — Yours.' Jesus prayed it for me!", prayer:"Jesus, You were in so much pain in that garden. And You still chose God's will over Your own. Help me learn to pray 'not my will — Yours' even when it's hard. Amen." },
+      { night:"Night 3", title:"The Cross", ref:"John 19", verse:{text:"It is finished.",cite:"John 19:30 · CSB"}, color:"#0A0000", accentColor:"#AA2222", headerType:"cross", lines:[{icon:"heart",text:"This is the hardest part of the story — and the most important part."},{icon:"heart",text:"Jesus was put on a cross. He was hurt. He suffered. And He didn't deserve any of it."},{icon:"star",text:"He did it for us. For every wrong thing you and I have ever done or will ever do — <em>He took all of it.</em>"},{icon:"heart",text:"Even hanging on the cross, He prayed: <em>\"Father, forgive them — they don't know what they're doing.\"</em>"},{icon:"light",text:"The sky went dark in the middle of the day. The earth shook. The curtain in the temple tore in two."},{icon:"heart",text:"The curtain that had always kept people far from God — <strong>torn in half.</strong> Now anyone could come close."},{icon:"star",text:"A soldier who had been watching said: <em>\"This man really was the Son of God.\"</em>"},{icon:"gold",text:"And then Jesus said three words that changed all of history:"},{icon:"star",text:"<strong>\"It is finished.\"</strong>"},{icon:"heart",text:"The debt was paid. The price was covered. Nothing more needed to be done. <em>He did it all — for love of you, Avynn.</em>"}], sayIt:"It is finished — Jesus paid it all for me!", prayer:"Jesus, I can't fully understand what the cross cost You. But I know You did it for love. Thank You. I am so grateful. Help me never take that for granted. Amen." },
+      { night:"Night 4", title:"The Empty Tomb", ref:"John 20", verse:{text:"He is not here, for he has risen, just as he said.",cite:"Matthew 28:6 · CSB"}, color:"#080A00", accentColor:"#FFEE44", headerType:"tomb", lines:[{icon:"heart",text:"The disciples were devastated. Jesus — their teacher, their friend, the one they had given everything for — was gone."},{icon:"star",text:"Early on Sunday morning, while it was still dark, Mary Magdalene went to the tomb."},{icon:"stone",text:"She got there and saw something that stopped her cold — the stone was rolled away. The tomb was open."},{icon:"fear",text:"She ran to get Peter and John. They ran back to the tomb. They looked inside."},{icon:"light",text:"The cloth that had been wrapped around Jesus — it was there. Neatly folded. But <strong>Jesus wasn't.</strong>"},{icon:"heart",text:"Mary stood outside the tomb crying. She looked inside and saw <strong>two angels.</strong>"},{icon:"star",text:"<em>\"Why are you crying?\"</em> they asked. She turned around — and there was someone standing behind her."},{icon:"heart",text:"She thought it was the gardener. Then He said her name: <em>\"Mary.\"</em>"},{icon:"gold",text:"<strong>She knew that voice.</strong> She spun around. <em>\"Rabboni!\"</em> — My Teacher. <em>Jesus was alive.</em>"},{icon:"star",text:"He is not here — <strong>He is risen.</strong> And because He rose, Avynn, you get to live forever too."}], sayIt:"He is risen — and because He lives, I live too!", prayer:"Jesus, You beat death. You actually beat it. You rose from the grave and walked back out. Thank You. Because You live, I don't have to be afraid of anything. Amen." },
+      { night:"Night 5", title:"Jesus Goes Back to Heaven", ref:"Acts 1", verse:{text:"You will receive power when the Holy Spirit has come on you.",cite:"Acts 1:8 · CSB"}, color:"#060A18", accentColor:"#88AAFF", headerType:"ascension", lines:[{icon:"heart",text:"After Jesus rose from the dead, He spent forty days with His disciples. Talking. Teaching. Eating with them."},{icon:"people",text:"He appeared to hundreds of people. He wanted them — and us — to be absolutely sure: <strong>He was alive.</strong>"},{icon:"walk",text:"Then the day came. He led them to a hillside outside Jerusalem."},{icon:"heart",text:"He told them: <em>\"Go and tell everyone — in Jerusalem, in the whole world — everything you have seen and heard.\"</em>"},{icon:"star",text:"<em>\"You won't be alone,\"</em> He promised. <em>\"The Holy Spirit will come and give you power.\"</em>"},{icon:"light",text:"And then — right in front of them — He was lifted up. Higher and higher. Into the clouds."},{icon:"star",text:"They stood there staring at the sky. Then two angels appeared: <em>\"Why are you standing here looking up? He will come back the same way you saw Him leave.\"</em>"},{icon:"heart",text:"He wasn't gone forever. He was going to prepare a place for them. For <em>us.</em>"},{icon:"gold",text:"And He sent the Holy Spirit to live <strong>inside</strong> every person who loves Him. Including you, Avynn."},{icon:"star",text:"Jesus is coming back. Until then — <strong>you carry Him everywhere you go.</strong>"}], sayIt:"Jesus lives in me — I carry Him everywhere I go!", prayer:"Jesus, thank You for sending the Holy Spirit to live inside me. I'm never alone. Help me remember that I carry You with me everywhere I go — and let that make me brave. Amen." },
+    ]
+  },
+  {
+    name:"The Early Church",
+    theme:"The Holy Spirit shows up and changes everything",
+    stories:[
+      { night:"Night 1", title:"Pentecost — Fire Falls", ref:"Acts 2", verse:{text:"They were all filled with the Holy Spirit.",cite:"Acts 2:4 · CSB"}, color:"#1A0800", accentColor:"#FF6600", headerType:"pentecost", lines:[{icon:"people",text:"The disciples were gathered together in one place, praying and waiting — just as Jesus had told them."},{icon:"wind",text:"Suddenly — a sound like a <strong>violent rushing wind</strong> filled the whole house."},{icon:"fire",text:"And then — <em>fire.</em> Tongues of fire that split apart and rested on each person."},{icon:"gold",text:"<strong>Every single one of them was filled with the Holy Spirit.</strong>"},{icon:"people",text:"They went outside and started speaking — in languages they had never learned. People from all over the world could hear them."},{icon:"heart",text:"<em>\"How is this possible?\"</em> the crowd asked. <em>\"These are simple Galilean people — how can they speak our language?\"</em>"},{icon:"star",text:"Peter stood up and preached. The man who had denied Jesus three times — <strong>stood up and preached.</strong>"},{icon:"heart",text:"Three thousand people believed in Jesus that day. Three thousand. In one afternoon."},{icon:"fire",text:"That same Holy Spirit lives in you, Avynn. Not smaller. Not weaker. <em>The same one.</em>"},{icon:"gold",text:"<strong>The fire that fell on Pentecost — that's the same fire in your heart.</strong>"}], sayIt:"The same Holy Spirit lives in me — the same fire!", prayer:"Holy Spirit, thank You for coming. Thank You that You didn't stay far away — You came to live inside us. Fill me up today. I want all of You. Amen." },
+      { night:"Night 2", title:"Peter and John Heal a Beggar", ref:"Acts 3", verse:{text:"Silver or gold I do not have, but what I do have I give you.",cite:"Acts 3:6 · CSB"}, color:"#080A08", accentColor:"#44BB44", headerType:"healing", lines:[{icon:"walk",text:"Peter and John were heading to the temple to pray. A man was sitting at the gate — the same spot every day."},{icon:"heart",text:"He had never walked. Not once in his life. He sat and asked for money from people passing by."},{icon:"heart",text:"He saw Peter and John and held out his hand for a coin. Peter stopped and looked at him."},{icon:"star",text:"<em>\"Look at us,\"</em> Peter said. The man looked up, expecting money."},{icon:"gold",text:"<em>\"Silver or gold I don't have. But what I do have — I give you.\"</em>"},{icon:"light",text:"<em>\"In the name of Jesus Christ of Nazareth — <strong>walk.</strong>\"</em>"},{icon:"heart",text:"Peter took his hand and pulled him up. And <em>immediately</em> his feet and ankles became strong."},{icon:"walk",text:"The man leaped to his feet. He started <strong>walking and jumping</strong> and praising God right there in the temple."},{icon:"people",text:"Everyone who saw him knew this was the man who sat begging at the gate. They were absolutely amazed."},{icon:"star",text:"Peter had something better than money. He had Jesus. <strong>And Jesus is still the best thing anyone can give.</strong>"}], sayIt:"I have Jesus to give — and that's better than anything!", prayer:"God, Peter had something better than money to give. Help me remember that I carry Jesus — and that's the greatest gift I can offer anyone. Amen." },
+      { night:"Night 3", title:"Paul Meets Jesus on the Road", ref:"Acts 9", verse:{text:"Why are you persecuting me?",cite:"Acts 9:4 · CSB"}, color:"#100A00", accentColor:"#FFAA33", headerType:"paul", lines:[{icon:"star",text:"There was a man named Saul who hated Christians. He hunted them down. He was proud of it."},{icon:"walk",text:"He was on his way to a city called Damascus to arrest more believers — when something stopped him cold."},{icon:"light",text:"A <strong>blinding light from heaven</strong> flashed all around him. He fell to the ground."},{icon:"heart",text:"A voice spoke: <em>\"Saul, Saul — why are you persecuting Me?\"</em>"},{icon:"fear",text:"<em>\"Who are You, Lord?\"</em> Saul asked, trembling."},{icon:"gold",text:"<em>\"I am Jesus — the one you are persecuting.\"</em>"},{icon:"star",text:"Saul was blinded. His companions led him into the city. He didn't eat or drink for three days."},{icon:"heart",text:"God sent a believer named Ananias to pray for him. When Ananias put his hands on Saul — <strong>his sight came back.</strong>"},{icon:"star",text:"Saul was baptized. And the man who had hunted Christians became the greatest missionary who ever lived."},{icon:"gold",text:"His name became <strong>Paul.</strong> Nobody is too far from Jesus. <em>Nobody.</em>"}], sayIt:"Nobody is too far from Jesus — He can reach anyone!", prayer:"Jesus, You stopped Saul right in the middle of his worst choices and turned him into someone amazing. You can do that for anyone. Thank You that You never give up on people. Amen." },
+      { night:"Night 4", title:"Paul and Silas in Prison", ref:"Acts 16", verse:{text:"Suddenly there was a violent earthquake.",cite:"Acts 16:26 · CSB"}, color:"#080808", accentColor:"#FFCC00", headerType:"prison", lines:[{icon:"heart",text:"Paul and his friend Silas were thrown in prison — just for telling people about Jesus."},{icon:"star",text:"They were put in the deepest, darkest cell. Their feet were locked in chains."},{icon:"horn",text:"It was midnight. And do you know what they did? <strong>They sang.</strong>"},{icon:"heart",text:"Praying and singing praises to God — <em>in prison, in the dark, in chains.</em>"},{icon:"gold",text:"The other prisoners were listening. <em>They were listening.</em>"},{icon:"star",text:"Then — suddenly — a violent earthquake. The whole prison shook."},{icon:"heart",text:"Every door flew open. Every chain fell off."},{icon:"fear",text:"The guard woke up terrified. He thought everyone had escaped. He was about to hurt himself."},{icon:"star",text:"<em>\"Don't do it!\"</em> Paul shouted. <em>\"We're all still here!\"</em>"},{icon:"gold",text:"The guard fell trembling before them. <em>\"What must I do to be saved?\"</em> He and his whole family believed that night. <strong>Worship in the dark — and God shakes things loose.</strong>"}], sayIt:"I can worship even in the dark — and God will shake things loose!", prayer:"God, Paul and Silas worshiped in chains. Help me worship You even when things are hard — even in my hard moments. You hear every song. Amen." },
+      { night:"Night 5", title:"John Sees Heaven", ref:"Revelation 21", verse:{text:"He will wipe away every tear from their eyes.",cite:"Revelation 21:4 · CSB"}, color:"#060A18", accentColor:"#AACCFF", headerType:"heaven", lines:[{icon:"star",text:"John was an old man, alone on an island — when God gave him the most incredible vision anyone has ever seen."},{icon:"light",text:"He saw heaven. The New Jerusalem, coming down from God — <strong>brilliant as a precious jewel, gleaming like crystal.</strong>"},{icon:"gold",text:"Streets of gold. Gates of pearl. A river of the water of life, clear as crystal."},{icon:"heart",text:"No more crying. No more pain. No more death."},{icon:"gold",text:"<strong>\"He will wipe away every tear from their eyes.\"</strong>"},{icon:"star",text:"God Himself will live with His people — face to face. <em>No more separation.</em>"},{icon:"heart",text:"The sun won't even be needed there — because <strong>the glory of God will light up everything.</strong>"},{icon:"star",text:"John wrote it all down so that we would know — this is where the story ends. This is what we're heading toward."},{icon:"heart",text:"Every hard night, every sad moment, every scary thing — they are <em>temporary.</em>"},{icon:"gold",text:"What's permanent is this: <strong>Heaven. God. Together. Forever.</strong> That's what's waiting for you, Avynn."}], sayIt:"Heaven is waiting — the best part of the story is still coming!", prayer:"God, thank You that this world isn't the end of the story. Thank You that heaven is real and You'll wipe every tear away. Help me hold onto that when things get hard. Amen." },
+    ]
+  },
+  {
+    name:"God's Character",
+    theme:"Who God is — and what that means for Avynn",
+    stories:[
+      { night:"Night 1", title:"God Is Always With You", ref:"Psalm 139", verse:{text:"Where can I flee from your presence?",cite:"Psalm 139:7 · CSB"}, color:"#080A18", accentColor:"#6688FF", headerType:"omnipresent", lines:[{icon:"star",text:"David wrote this psalm — and he was amazed by one thing above everything else: <em>God is always there.</em>"},{icon:"heart",text:"<em>\"Where can I go from Your Spirit? Where can I flee from Your presence?\"</em>"},{icon:"star",text:"If I go up to heaven — <strong>You are there.</strong>"},{icon:"star",text:"If I go to the deepest sea — <strong>You are there.</strong>"},{icon:"light",text:"If I fly to the far edge of the morning — <strong>Your hand is there to guide me.</strong>"},{icon:"heart",text:"Even in the dark — the dark is not dark to God. <em>Night and day are the same to Him.</em>"},{icon:"gold",text:"God knew you before you were born, Avynn. He saw you being formed. <strong>He counted every part of you.</strong>"},{icon:"heart",text:"He knows when you sit down and when you stand up. He knows every thought before you think it."},{icon:"star",text:"This is not scary — <em>this is the most comforting thing in the world.</em>"},{icon:"gold",text:"<strong>You are never alone. Not for a single second.</strong> God is always right there with you."}], sayIt:"I am never alone — God is always right here with me!", prayer:"God, You know everything about me — every thought, every fear, every secret. And You love me anyway. Thank You that I can never go somewhere You're not. Amen." },
+      { night:"Night 2", title:"God Is Our Shepherd", ref:"Psalm 23", verse:{text:"The Lord is my shepherd; I have what I need.",cite:"Psalm 23:1 · CSB"}, color:"#080A00", accentColor:"#88CC44", headerType:"shepherd", lines:[{icon:"heart",text:"David was a shepherd boy before he became a king. He knew what a shepherd does."},{icon:"sheep",text:"A shepherd leads his sheep to green grass and still water. <em>He takes care of every need.</em>"},{icon:"heart",text:"David said: <em>\"The Lord is my shepherd.\"</em> That means God is taking care of <strong>me</strong> like that."},{icon:"water",text:"<em>\"He lets me lie down in green pastures. He leads me beside quiet waters. He gives my soul rest.\"</em>"},{icon:"walk",text:"Even when I walk through the darkest valley — <strong>I don't have to be afraid.</strong> He's right there with me."},{icon:"star",text:"The shepherd carries a staff — to guide the sheep and protect them from danger."},{icon:"heart",text:"God prepares a table for me — <em>even when enemies are watching.</em> He sets a feast and invites me to sit."},{icon:"gold",text:"He pours blessing on my head. <em>My cup overflows.</em>"},{icon:"star",text:"<em>\"Surely goodness and faithful love will follow me all the days of my life.\"</em>"},{icon:"heart",text:"Not sometimes. Not when you deserve it. <strong>All. The. Days.</strong> That's your God, Avynn."}], sayIt:"The Lord is my shepherd — I have everything I need!", prayer:"God, You are my shepherd. You lead me to good places and take care of me. Help me follow You the way sheep follow their shepherd — trusting You completely. Amen." },
+      { night:"Night 3", title:"God Hears Every Prayer", ref:"1 Kings 18", verse:{text:"Answer me, Lord! Answer me.",cite:"1 Kings 18:37 · CSB"}, color:"#100800", accentColor:"#FF8800", headerType:"elijah", lines:[{icon:"heart",text:"There was a prophet named Elijah who stood alone against 450 false prophets on a mountain."},{icon:"fire",text:"It was a contest: whose God would send fire down from heaven to light an altar?"},{icon:"star",text:"The false prophets went first. They danced around their altar for hours. They shouted. They cut themselves. <strong>Nothing happened.</strong>"},{icon:"heart",text:"Then Elijah rebuilt the altar of God. He soaked it with water — not once, not twice, but three times. Soaking wet."},{icon:"star",text:"He dug a trench around it and filled that with water too. <em>He wanted to make it obvious it couldn't be faked.</em>"},{icon:"heart",text:"Then Elijah prayed. One prayer. Simple. Confident. <em>\"Lord, answer me so these people will know that You are God.\"</em>"},{icon:"fire",text:"<strong>Fire fell from heaven.</strong> It burned up the sacrifice. The wood. The stones. The water in the trench. Everything."},{icon:"heart",text:"The people fell on their faces. <em>\"The Lord — He is God! The Lord — He is God!\"</em>"},{icon:"gold",text:"Elijah didn't need fancy words. He didn't need a long prayer. He just <strong>talked to God. And God answered.</strong>"},{icon:"star",text:"You can do that, Avynn. Just talk to Him. <em>He is listening. He will answer.</em>"}], sayIt:"God hears me when I pray — and He always answers!", prayer:"God, Elijah just talked to You and You sent fire from heaven. Help me remember that prayer is just talking to You — and You really do listen and answer. Amen." },
+      { night:"Night 4", title:"God's Love Never Ends", ref:"Lamentations 3", verse:{text:"His mercies never end. They are new every morning.",cite:"Lamentations 3:22-23 · CSB"}, color:"#0A080A", accentColor:"#CC88CC", headerType:"mercy", lines:[{icon:"heart",text:"Jeremiah was having one of the worst times of his life. His city was destroyed. His people were broken."},{icon:"star",text:"He sat in the middle of devastation and wrote this:"},{icon:"gold",text:"<em>\"Yet this I call to mind — and therefore I have hope.\"</em>"},{icon:"heart",text:"<em>\"The faithful love of the Lord never ends. His mercies never cease.\"</em>"},{icon:"star",text:"<strong>\"They are new every morning.\"</strong>"},{icon:"heart",text:"Every single morning when you wake up, Avynn — God has <em>fresh mercy</em> ready for you."},{icon:"gold",text:"It's not running out. It's not getting tired. It's not keeping score. <strong>New. Every. Morning.</strong>"},{icon:"star",text:"Bad day yesterday? Fresh mercy today. Made a mistake? Fresh mercy today."},{icon:"heart",text:"<em>\"Great is Your faithfulness,\"</em> Jeremiah wrote — in the middle of the hardest season of his life."},{icon:"gold",text:"If mercy could run out, Jeremiah would have been the one to use it up. It didn't. It won't. <strong>Not ever.</strong>"}], sayIt:"God's mercy is new every morning — today is a fresh start!", prayer:"God, thank You that Your mercy is new every morning. Yesterday doesn't have to follow me into today. Every morning I wake up to a fresh start with You. Thank You. Amen." },
+      { night:"Night 5", title:"Nothing Can Separate Us", ref:"Romans 8", verse:{text:"Nothing can separate us from the love of God.",cite:"Romans 8:39 · CSB"}, color:"#060A10", accentColor:"#4488FF", headerType:"love", lines:[{icon:"heart",text:"Paul wanted to make absolutely sure — no question, no doubt, no wondering."},{icon:"star",text:"So he made a list. Every scary, hard thing he could think of."},{icon:"heart",text:"<em>Can trouble separate us from the love of God?</em> <strong>No.</strong>"},{icon:"heart",text:"<em>Can hardship? Danger? Death?</em> <strong>No. No. No.</strong>"},{icon:"star",text:"He said: <em>\"In all these things we are more than conquerors through Him who loved us.\"</em>"},{icon:"gold",text:"<strong>More than conquerors.</strong> Not barely surviving — <em>more than winning.</em>"},{icon:"heart",text:"And then Paul went even bigger — death, life, angels, rulers, things present, things to come, height, depth —"},{icon:"gold",text:"<strong>\"Nothing in all creation can separate us from the love of God that is in Christ Jesus.\"</strong>"},{icon:"heart",text:"That list covers everything. <em>Everything.</em> He thought of every possible thing — and said none of it can do it."},{icon:"star",text:"You are <strong>held</strong>, Avynn. Not by your behavior. Not by your feelings. By a love that cannot be broken. <em>Not ever.</em>"}], sayIt:"Nothing can separate me from God's love — nothing!", prayer:"God, thank You that Your love isn't something I can lose. It holds me even when I mess up, even when I'm scared, even when I don't feel it. That love is real. Amen." },
+    ]
+  },
+  {
+    name:"Proverbs for Life",
+    theme:"God's wisdom for the everyday",
+    stories:[
+      { night:"Night 1", title:"Trust God With Everything", ref:"Proverbs 3:5-6", verse:{text:"Trust in the Lord with all your heart.",cite:"Proverbs 3:5 · CSB"}, color:"#080A10", accentColor:"#88AAFF", headerType:"trust", lines:[{icon:"heart",text:"Solomon was the wisest person who ever lived. And the wisest thing he ever wrote is this:"},{icon:"gold",text:"<em>\"Trust in the Lord with <strong>all</strong> your heart.\"</em>"},{icon:"star",text:"Not some of it. Not the parts you're not using. <em>All of it.</em>"},{icon:"heart",text:"<em>\"And do not rely on your own understanding.\"</em>"},{icon:"star",text:"This means: sometimes you won't understand why something is happening. <strong>Trust anyway.</strong>"},{icon:"heart",text:"<em>\"In all your ways know Him.\"</em> In every decision. In every moment. Keep God in view."},{icon:"gold",text:"<em>\"And He will make your paths straight.\"</em>"},{icon:"star",text:"Not necessarily easy. <strong>Straight.</strong> Going somewhere good. Going where He wants you."},{icon:"heart",text:"The Hebrew word for 'trust' here means to lean your whole weight on something — like leaning on a strong wall."},{icon:"gold",text:"Lean your <em>whole weight</em> on God, Avynn. He is strong enough. <strong>He has never dropped anyone yet.</strong>"}], sayIt:"I trust God with all my heart — He will make my path straight!", prayer:"God, help me trust You with all my heart — even the parts I'm scared to give You. I don't have to understand everything. I just have to trust You. Amen." },
+      { night:"Night 2", title:"Kind Words Are a Gift", ref:"Proverbs 16:24", verse:{text:"Pleasant words are a honeycomb: sweet to the taste and health to the body.",cite:"Proverbs 16:24 · CSB"}, color:"#0A0800", accentColor:"#FFCC22", headerType:"words", lines:[{icon:"heart",text:"Solomon said that kind words are like honeycomb — <em>sweet and healing.</em>"},{icon:"gold",text:"Think about the last time someone said something really kind to you. How did it feel?"},{icon:"heart",text:"It probably felt warm. Safe. Like something inside you relaxed a little."},{icon:"star",text:"<strong>Words have power.</strong> They can hurt — or they can heal. Every single time you speak, you're choosing."},{icon:"heart",text:"A kind word to a sad friend is like medicine. It doesn't fix everything — but it <em>helps.</em>"},{icon:"gold",text:"God made words powerful on purpose. He spoke the whole world into existence with words."},{icon:"star",text:"When you speak kindly, you're doing something <em>God-like.</em> You're creating something good."},{icon:"heart",text:"Think before you speak, sweet girl. Ask: <em>\"Is this going to be honey — or is this going to sting?\"</em>"},{icon:"star",text:"You get to choose. Every time."},{icon:"gold",text:"<strong>Let your words be honeycomb, Avynn. The world needs more of that.</strong>"}], sayIt:"My words are powerful — I choose to make them sweet!", prayer:"God, help me think before I speak. Help me use my words to heal and encourage, not to hurt. Let my words be like honey — sweet and good. Amen." },
+      { night:"Night 3", title:"Work Hard at Everything", ref:"Proverbs 31 & Colossians 3", verse:{text:"Whatever you do, do it from the heart, as something done for the Lord.",cite:"Colossians 3:23 · CSB"}, color:"#0A0A00", accentColor:"#CCAA33", headerType:"work", lines:[{icon:"heart",text:"There's a woman at the end of Proverbs who is described as someone who works incredibly hard."},{icon:"star",text:"She gets up before the sun. She takes care of her family. She plants fields. She runs a business."},{icon:"gold",text:"And she does all of it <em>with strength and dignity.</em>"},{icon:"heart",text:"She's not tired and grumpy. She's <strong>laughing at the future</strong> — because she's prepared."},{icon:"star",text:"Paul added to this: <em>\"Whatever you do — do it from the heart, as something done for the Lord.\"</em>"},{icon:"heart",text:"Cleaning your room. Doing schoolwork. Being kind to a sibling. <em>All of it — for God.</em>"},{icon:"gold",text:"Work is worship when your heart is right."},{icon:"star",text:"You don't have to do big, famous things to honor God, Avynn."},{icon:"heart",text:"You can honor Him by doing <em>small things really, really well.</em>"},{icon:"gold",text:"<strong>Work hard. Do it for God. He sees every bit of it — and He is so pleased.</strong>"}], sayIt:"I work hard as worship to God — He sees everything I do!", prayer:"God, help me work hard at everything — not to impress people, but for You. Help me remember that even small things done for You are big things. Amen." },
+      { night:"Night 4", title:"Real Friends Make You Better", ref:"Proverbs 27:17", verse:{text:"Iron sharpens iron, and one person sharpens another.",cite:"Proverbs 27:17 · CSB"}, color:"#080A08", accentColor:"#44BB88", headerType:"friends", lines:[{icon:"heart",text:"Solomon said that friends are like iron sharpening iron — they make each other <em>better.</em>"},{icon:"star",text:"When two pieces of iron rub together, they create sparks. It's not always comfortable. But the edges get sharper."},{icon:"heart",text:"A real friend isn't just someone who makes you feel good all the time."},{icon:"gold",text:"A real friend tells you the truth — even when it's hard to hear."},{icon:"heart",text:"A real friend helps you become a <em>better</em> version of yourself."},{icon:"star",text:"And a real friend is someone <em>you</em> sharpen too. Someone you help grow."},{icon:"heart",text:"Choose your friends carefully, sweet girl. You become like the people you spend the most time with."},{icon:"gold",text:"Spend time with people who love God. People who are kind and honest and brave."},{icon:"star",text:"And <strong>be that kind of friend to others.</strong> Be iron that sharpens."},{icon:"heart",text:"The best friendships point both people <strong>toward Jesus.</strong> That's the kind worth having."}], sayIt:"I choose friends who make me better — and I make them better too!", prayer:"God, help me choose good friends. Help me be a good friend. Help me be the kind of person who makes the people around me sharper and stronger. Amen." },
+      { night:"Night 5", title:"Guard Your Heart", ref:"Proverbs 4:23", verse:{text:"Guard your heart above all else, for it is the source of life.",cite:"Proverbs 4:23 · CSB"}, color:"#0A0808", accentColor:"#FF6688", headerType:"heart", lines:[{icon:"heart",text:"Solomon said the most important thing you can protect is <em>your heart.</em>"},{icon:"star",text:"Not your stuff. Not your reputation. <strong>Your heart.</strong>"},{icon:"heart",text:"Because everything that comes out of you — every word, every choice, every action — <em>flows from your heart.</em>"},{icon:"gold",text:"If your heart is full of good things — love, trust, gratitude, faith — <em>good things will come out.</em>"},{icon:"heart",text:"If your heart is full of bitterness, anger, fear — <em>those things will come out instead.</em>"},{icon:"star",text:"Guarding your heart means being careful about what you let inside. What you watch. What you listen to. What you think about."},{icon:"heart",text:"It means choosing to think about things that are true and beautiful and good — like Paul said in Philippians 4."},{icon:"gold",text:"It means going to God when something is hurting your heart — <em>before it takes root.</em>"},{icon:"star",text:"Your heart is valuable, Avynn. <strong>Protect it like a treasure.</strong>"},{icon:"heart",text:"Fill it with God's Word. Fill it with worship. Fill it with love. <em>What goes in will always come out.</em>"}], sayIt:"I guard my heart — because my heart is where life comes from!", prayer:"God, help me guard my heart. Help me be careful about what I let in. Fill my heart with Your Word and Your love — so that good things come out of me. Amen." },
+    ]
+  },
+  {
+    name:"The King Is Coming",
+    theme:"The story isn't over — the best is yet to come",
+    stories:[
+      { night:"Night 1", title:"Heaven Is a Real Place", ref:"John 14 & Revelation 21", verse:{text:"I go to prepare a place for you.",cite:"John 14:2 · CSB"}, color:"#060A18", accentColor:"#AABBFF", headerType:"heaven2", lines:[{icon:"heart",text:"On the night before He died, Jesus told His disciples something wonderful: <em>\"Don't let your hearts be troubled.\"</em>"},{icon:"star",text:"<em>\"My Father's house has many rooms. I am going to prepare a place for you.\"</em>"},{icon:"heart",text:"He said <em>prepare.</em> Like He's setting up a room. Picking it out. Making it perfect. <strong>For you, Avynn. Specifically.</strong>"},{icon:"gold",text:"John caught a glimpse of it in Revelation — streets of gold, gates of pearl, a river of life, no more tears."},{icon:"heart",text:"<em>\"God Himself will be with them. He will wipe every tear from their eyes.\"</em>"},{icon:"star",text:"No more sad days. No more bad dreams. No more hurting."},{icon:"gold",text:"<strong>Just God. And love. And home. Forever.</strong>"},{icon:"heart",text:"This is real. Jesus said so. And He doesn't say things that aren't true."},{icon:"star",text:"Everything hard here is <em>temporary.</em> Everything good there is <em>permanent.</em>"},{icon:"heart",text:"Your whole life here is like the cover of the book, Avynn. <strong>The story inside is still to come.</strong>"}], sayIt:"Jesus is preparing a place for me — heaven is real and I'm going!", prayer:"Jesus, thank You that heaven is real. Thank You that You are getting it ready for me. Help me live here knowing that the very best is still coming. Amen." },
+      { night:"Night 2", title:"The Armor of God", ref:"Ephesians 6", verse:{text:"Put on the full armor of God.",cite:"Ephesians 6:11 · CSB"}, color:"#080A10", accentColor:"#8888FF", headerType:"armor", lines:[{icon:"star",text:"Paul told us something important: we are in a battle. Not against people — against the real enemy of our souls."},{icon:"heart",text:"And God hasn't left us unarmed. He has <em>full armor</em> for us."},{icon:"gold",text:"The <strong>Belt of Truth</strong> — truth holds everything together. Know what's true about God and about yourself."},{icon:"star",text:"The <strong>Breastplate of Righteousness</strong> — doing what's right protects your heart."},{icon:"walk",text:"<strong>Shoes of Peace</strong> — you are ready to go wherever God sends you, bringing peace."},{icon:"shield",text:"The <strong>Shield of Faith</strong> — it blocks the enemy's attacks. Every doubt, every fear — faith deflects it."},{icon:"crown",text:"The <strong>Helmet of Salvation</strong> — you know who you are and whose you are. Nobody can take that from you."},{icon:"star",text:"The <strong>Sword of the Spirit</strong> — God's Word. The one offensive weapon. Speak Scripture when the enemy attacks."},{icon:"heart",text:"And underneath all of it: <strong>prayer.</strong> Stay connected to God at all times."},{icon:"gold",text:"You are a warrior, Avynn. <em>Put your armor on every morning.</em> God has already won the war."}], sayIt:"I put on God's armor every day — I am a warrior!", prayer:"God, help me remember to put on my armor every morning. I want to be ready. I know You've already won — help me live like someone who knows that. Amen." },
+      { night:"Night 3", title:"Jesus Is Coming Back", ref:"Revelation 22", verse:{text:"Yes, I am coming soon.",cite:"Revelation 22:20 · CSB"}, color:"#060A18", accentColor:"#FFD700", headerType:"return", lines:[{icon:"star",text:"The very last pages of the Bible are a promise — the last words Jesus says are:"},{icon:"gold",text:"<strong>\"Yes, I am coming soon.\"</strong>"},{icon:"heart",text:"He said it. He meant it. And one day — it will happen."},{icon:"star",text:"Jesus will come back. Not secretly. <em>Visibly. Gloriously.</em> Every eye will see."},{icon:"heart",text:"The Bible says it will be like lightning flashing from east to west — <strong>impossible to miss.</strong>"},{icon:"gold",text:"He's coming for His people. For everyone who belongs to Him."},{icon:"heart",text:"Until that day — we are not killing time. We are not just waiting."},{icon:"star",text:"We are <em>carrying His light</em> into a world that needs it."},{icon:"heart",text:"We are loving people. Telling His story. Doing good. Being His hands and His feet."},{icon:"gold",text:"<strong>\"Come, Lord Jesus.\"</strong> That's the prayer that has been prayed by every believer for two thousand years. And one day — He will."}], sayIt:"Jesus is coming back — and until then I carry His light!", prayer:"Jesus, come back soon. Until You do, help me carry Your light every day. Help me live like someone who is excited for Your return — and ready. Amen." },
+      { night:"Night 4", title:"You Are God's Masterpiece", ref:"Ephesians 2:10", verse:{text:"We are his workmanship, created in Christ Jesus for good works.",cite:"Ephesians 2:10 · CSB"}, color:"#080A00", accentColor:"#FFCC44", headerType:"masterpiece", lines:[{icon:"heart",text:"The Greek word Paul uses for 'workmanship' is <em>poiēma.</em> It means <strong>poem. Masterpiece.</strong>"},{icon:"star",text:"<em>You are God's poem.</em> His masterpiece. Written on purpose, with care, with intention."},{icon:"heart",text:"He didn't make you by accident. He didn't slap you together quickly."},{icon:"gold",text:"<strong>He crafted you.</strong> The way you laugh. The way you think. The things that make you, you. All on purpose."},{icon:"heart",text:"And He made you for <em>good works</em> — things He prepared ahead of time for you specifically."},{icon:"star",text:"There are things only <em>you</em> can do. People only you can reach. A unique mark only you can leave."},{icon:"heart",text:"You don't have to earn your place, Avynn. <em>You already have one.</em> God made it for you."},{icon:"gold",text:"You don't have to be someone else. <strong>He made you to be you — specifically and on purpose.</strong>"},{icon:"star",text:"Walk in it. The good works are already prepared. You just have to show up."},{icon:"heart",text:"<em>You are His masterpiece.</em> Read that again. Let it sink all the way in."}], sayIt:"I am God's masterpiece — made on purpose for a purpose!", prayer:"God, help me believe that I am Your masterpiece. Help me stop wishing I were different and start walking in the purpose You made me for. I am Yours. Amen." },
+      { night:"Night 5", title:"The Greatest Commandment", ref:"Matthew 22", verse:{text:"Love the Lord your God with all your heart, soul, and mind.",cite:"Matthew 22:37 · CSB"}, color:"#0A0808", accentColor:"#FF6644", headerType:"love2", lines:[{icon:"heart",text:"Someone asked Jesus: <em>\"What is the most important commandment of all?\"</em>"},{icon:"gold",text:"Jesus didn't hesitate. He said: <strong>\"Love the Lord your God with all your heart, with all your soul, and with all your mind.\"</strong>"},{icon:"heart",text:"<em>All</em> your heart. <em>All</em> your soul. <em>All</em> your mind."},{icon:"star",text:"Not the leftover parts. Not the parts you're done using. <em>Everything.</em>"},{icon:"heart",text:"And the second, Jesus said, is like it: <strong>\"Love your neighbor as yourself.\"</strong>"},{icon:"star",text:"Two commands. <em>Every other command hangs on these two.</em>"},{icon:"heart",text:"This is the whole thing, Avynn. This is what all the stories have been pointing to."},{icon:"gold",text:"<em>Love God.</em> First. Most. Everything else flows from that."},{icon:"heart",text:"<em>Love people.</em> The way you already know you want to be loved."},{icon:"gold",text:"<strong>That's it. That's the whole life. Love God. Love people. Go do it.</strong>"}], sayIt:"Love God with everything — love people with everything!", prayer:"God, this is the whole thing — love You, love people. Help me actually do it. Help me love You with all of me — and let that love overflow to everyone around me. Amen." },
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════
+   ICON SYSTEM — inline SVG icons for story lines
+   ═══════════════════════════════════════════════ */
+function icon(type){
+  const c = '#4FA3FF';
+  const g = '#C9A84C';
+  const icons = {
+    star:`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>`,
+    heart:`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+    gold:`<svg viewBox="0 0 24 24" fill="${g}" opacity=".85"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>`,
+    light:`<svg viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+    water:`<svg viewBox="0 0 24 24" fill="none" stroke="#40AAFF" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
+    fire:`<svg viewBox="0 0 24 24" fill="none" stroke="#FF8800" stroke-width="1.5"><path d="M12 22c5.5 0 10-4.5 10-10C22 7 17 2 12 2c1 4-1.5 6-4 8 0 0 1-4-1-7-2 2-5 5-5 9a10 10 0 0 0 10 10z"/></svg>`,
+    walk:`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.5"><circle cx="12" cy="4" r="2"/><path d="M9 8l-3 5h4l-2 8M15 8l3 5h-4l2 8"/></svg>`,
+    fish:`<svg viewBox="0 0 24 24" fill="none" stroke="#40CCFF" stroke-width="1.5"><path d="M19 12c0-4.5-3.5-9-9-9C5 3 2 7.5 2 12s3 9 8 9c5.5 0 9-4.5 9-9z"/><path d="M19 12l3-3-3-3"/></svg>`,
+    leaf:`<svg viewBox="0 0 24 24" fill="none" stroke="#44BB44" stroke-width="1.5"><path d="M17 8C8 10 5.9 16.17 3.82 19c1-1 4-3 6-3-4 4-2 7-2 7 3-1 8-3 11-9 3 0 5-2 5-2s-3-5-7-7z"/></svg>`,
+    rainbow:`<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M3 20a9 9 0 0 1 18 0" stroke="#FF4444"/><path d="M5 20a7 7 0 0 1 14 0" stroke="#FF8800"/><path d="M7 20a5 5 0 0 1 10 0" stroke="#FFDD00"/><path d="M9 20a3 3 0 0 1 6 0" stroke="#44BB44"/><path d="M10.5 20a1.5 1.5 0 0 1 3 0" stroke="#4488FF"/></svg>`,
+    dove:`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M16 7.5a4.5 4.5 0 0 1-9 0m4.5-4V7.5m0 0-4.5 7m4.5-7 4.5 7M3 19s2-3 5-3 4.5 2.5 4.5 2.5m0 0S15 19 18 17"/></svg>`,
+    rain:`<svg viewBox="0 0 24 24" fill="none" stroke="#4488FF" stroke-width="1.5"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="16" y1="19" x2="16" y2="21"/></svg>`,
+    wood:`<svg viewBox="0 0 24 24" fill="none" stroke="#8B5E20" stroke-width="1.5"><rect x="2" y="8" width="20" height="4" rx="1"/><rect x="2" y="14" width="20" height="4" rx="1"/><line x1="8" y1="6" x2="8" y2="2"/><line x1="16" y1="6" x2="16" y2="2"/></svg>`,
+    animals:`<svg viewBox="0 0 24 24" fill="none" stroke="#88AA44" stroke-width="1.5"><ellipse cx="9" cy="14" rx="5" ry="4"/><circle cx="9" cy="8" r="3"/><ellipse cx="18" cy="14" rx="4" ry="3"/><circle cx="18" cy="9" r="2.5"/></svg>`,
+    crown:`<svg viewBox="0 0 24 24" fill="none" stroke="${g}" stroke-width="1.5"><path d="M2 18h20l-2-8-5 3-3-7-3 7-5-3z"/></svg>`,
+    eye:`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    people:`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    army:`<svg viewBox="0 0 24 24" fill="none" stroke="#AA3322" stroke-width="1.5"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+    fear:`<svg viewBox="0 0 24 24" fill="none" stroke="#8888FF" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    staff:`<svg viewBox="0 0 24 24" fill="none" stroke="${g}" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M8 6c0-2 2-4 4-4s4 2 4 4"/></svg>`,
+    wind:`<svg viewBox="0 0 24 24" fill="none" stroke="#88BBFF" stroke-width="1.5"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>`,
+    horn:`<svg viewBox="0 0 24 24" fill="none" stroke="${g}" stroke-width="1.5"><path d="M18.5 3L22 7 13 21 2 10l5.5-4L18.5 3z"/></svg>`,
+    wall:`<svg viewBox="0 0 24 24" fill="none" stroke="#AA8833" stroke-width="1.5"><rect x="2" y="4" width="20" height="4" rx=".5"/><rect x="2" y="10" width="20" height="4" rx=".5"/><rect x="2" y="16" width="20" height="4" rx=".5"/><line x1="6" y1="4" x2="6" y2="20"/><line x1="14" y1="4" x2="14" y2="20"/></svg>`,
+    sheep:`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><ellipse cx="12" cy="12" rx="8" ry="6"/><circle cx="7" cy="9" r="3"/><line x1="8" y1="18" x2="8" y2="22"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="16" y1="18" x2="16" y2="22"/></svg>`,
+    sandal:`<svg viewBox="0 0 24 24" fill="none" stroke="${g}" stroke-width="1.5"><ellipse cx="12" cy="18" rx="8" ry="3"/><path d="M4 18V8l8-6 8 6v10"/></svg>`,
+    wheat:`<svg viewBox="0 0 24 24" fill="none" stroke="#AACC44" stroke-width="1.5"><line x1="12" y1="22" x2="12" y2="6"/><path d="M12 12a4 4 0 0 1 0-8"/><path d="M12 12a4 4 0 0 0 0-8"/><path d="M12 16a4 4 0 0 1 0-8"/><path d="M12 16a4 4 0 0 0 0-8"/></svg>`,
+    camel:`<svg viewBox="0 0 24 24" fill="none" stroke="${g}" stroke-width="1.5"><path d="M4 20V12a6 6 0 0 1 6-6h4a4 4 0 0 1 4 4v2a2 2 0 0 1-2 2H6"/><line x1="8" y1="20" x2="8" y2="16"/><line x1="14" y1="20" x2="14" y2="16"/></svg>`,
+    bread:`<svg viewBox="0 0 24 24" fill="none" stroke="${g}" stroke-width="1.5"><path d="M3 11l19-9-9 19-2-8z"/></svg>`,
+    giant:`<svg viewBox="0 0 24 24" fill="none" stroke="#AA2222" stroke-width="1.5"><circle cx="12" cy="5" r="3"/><path d="M9 9l-4 12M15 9l4 12M9 15h6M8 21h8"/></svg>`,
+    stone:`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.5"><ellipse cx="12" cy="12" rx="10" ry="7"/></svg>`,
+    shield:`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    dove2:`<svg viewBox="0 0 24 24" fill="white" opacity=".8"><path d="M12 2C9 2 7 4 7 7c-3 0-5 2-5 5 0 4 4 6 10 6s10-2 10-6c0-2-1-4-4-5l4-3-5 1z"/></svg>`,
+    tomb_s:`<svg viewBox="0 0 24 24" fill="none" stroke="${g}" stroke-width="1.5"><path d="M4 22V10a8 8 0 0 1 16 0v12"/><path d="M2 22h20"/></svg>`,
+    stone2:`<svg viewBox="0 0 24 24" fill="none" stroke="#888888" stroke-width="1.5"><circle cx="12" cy="12" r="9"/></svg>`,
+    smoke:`<svg viewBox="0 0 24 24" fill="none" stroke="#AAAAAA" stroke-width="1.5"><path d="M8 19H5a2 2 0 0 1-2-2 7 7 0 0 1 7-7 7 7 0 0 1 7 7 2 2 0 0 1-2 2h-3"/></svg>`,
+    book:`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+    dove3:`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M3 12c0-4.4 3.6-8 8-8 1.8 0 3.5.6 4.8 1.6L19 4v8h-8L8 8.5"/><path d="M11 12l3 6c-2 .5-4 0-4 0l-1 4"/></svg>`,
+  };
+  return icons[type] || icons['star'];
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER SVG GRAPHICS — vivid, per story
+   ═══════════════════════════════════════════════ */
+function headerGraphic(type, color, accent){
+  const ac = accent;
+  const bg = color;
+  const graphics = {
+    creation:`<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="cr_sun" cx="50%" cy="50%"><stop offset="0%" stop-color="#FFFCE0"/><stop offset="25%" stop-color="#FFE060"/><stop offset="55%" stop-color="#FF9900" stop-opacity=".6"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <linearGradient id="cr_sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0A1628"/><stop offset="55%" stop-color="#112244"/><stop offset="100%" stop-color="#1A3A5C"/></linearGradient>
+        <linearGradient id="cr_sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1066AA"/><stop offset="100%" stop-color="#062244"/></linearGradient>
+        <linearGradient id="cr_land" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2A5A18"/><stop offset="100%" stop-color="#1A3A08"/></linearGradient>
+      </defs>
+      <rect width="900" height="320" fill="url(#cr_sky)"/>
+      <!-- stars -->
+      <g fill="white"><circle cx="50" cy="30" r="2.2"/><circle cx="150" cy="15" r="1.8"/><circle cx="280" cy="40" r="2"/><circle cx="620" cy="20" r="1.8"/><circle cx="780" cy="35" r="2.2"/><circle cx="840" cy="12" r="1.6"/></g>
+      <!-- 4pt sparkle stars -->
+      <g fill="#E8C97A" opacity=".8"><path d="M100,25 L103,17 L106,25 L114,28 L106,31 L103,39 L100,31 L92,28Z"/><path d="M820,22 L823,14 L826,22 L834,25 L826,28 L823,36 L820,28 L812,25Z"/></g>
+      <!-- SUN — big, blazing, center top -->
+      <ellipse cx="450" cy="100" rx="500" ry="280" fill="url(#cr_sun)"/>
+      <circle cx="450" cy="80" r="55" fill="#FFFCE0" opacity=".9"/>
+      <circle cx="450" cy="80" r="40" fill="white"/>
+      <!-- sun rays -->
+      <g stroke="#FFD700" stroke-width="2.5" opacity=".55"><line x1="450" y1="20" x2="450" y2="5"/><line x1="450" y1="140" x2="450" y2="155"/><line x1="390" y1="80" x2="375" y2="80"/><line x1="510" y1="80" x2="525" y2="80"/><line x1="408" y1="38" x2="397" y2="27"/><line x1="492" y1="38" x2="503" y2="27"/><line x1="408" y1="122" x2="397" y2="133"/><line x1="492" y1="122" x2="503" y2="133"/></g>
+      <!-- land -->
+      <path d="M0,240 Q80,210 180,225 Q280,200 380,220 Q480,195 580,215 Q680,200 780,218 Q840,208 900,215 L900,320 L0,320 Z" fill="url(#cr_land)"/>
+      <!-- sea -->
+      <path d="M0,255 Q150,240 300,258 Q450,275 600,258 Q720,245 900,260 L900,320 L0,320 Z" fill="url(#cr_sea)" opacity=".6"/>
+      <!-- trees, flowers -->
+      <g fill="#186018"><rect x="80" y="195" width="8" height="40"/><ellipse cx="84" cy="185" rx="22" ry="28"/></g>
+      <g fill="#1A6A18"><rect x="200" y="202" width="7" height="35"/><ellipse cx="203" cy="193" rx="18" ry="24"/></g>
+      <g fill="#206A20"><rect x="700" y="198" width="8" height="38"/><ellipse cx="704" cy="188" rx="20" ry="26"/></g>
+      <g fill="#186018"><rect x="800" y="204" width="7" height="33"/><ellipse cx="803" cy="196" rx="16" ry="22"/></g>
+      <!-- birds in flight -->
+      <g stroke="white" stroke-width="2" fill="none" opacity=".6"><path d="M580,155 Q590,148 600,155"/><path d="M615,140 Q625,133 635,140"/><path d="M650,160 Q658,153 666,160"/></g>
+      <!-- text label -->
+      <text x="450" y="310" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#E8C97A" opacity=".4" letter-spacing="4">GENESIS  1</text>
+    </svg>`,
+
+    ark:`<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ark_sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#060C20"/><stop offset="100%" stop-color="#0E1A38"/></linearGradient>
+        <linearGradient id="ark_sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0055AA"/><stop offset="100%" stop-color="#002255"/></linearGradient>
+        <linearGradient id="ark_wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7A4A15"/><stop offset="100%" stop-color="#4A2808"/></linearGradient>
+        <radialGradient id="ark_moon" cx="78%" cy="12%"><stop offset="0%" stop-color="#FFFDE0"/><stop offset="35%" stop-color="#FFE8A0" stop-opacity=".5"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      </defs>
+      <rect width="900" height="320" fill="url(#ark_sky)"/>
+      <ellipse cx="700" cy="48" rx="220" ry="180" fill="url(#ark_moon)"/>
+      <circle cx="700" cy="48" r="35" fill="#FFFDE0" opacity=".9"/>
+      <circle cx="700" cy="48" r="26" fill="white"/>
+      <!-- rain lines — vivid blue -->
+      <g stroke="#4488FF" stroke-width="1.5" opacity=".55">
+        <line x1="50" y1="0" x2="30" y2="160"/><line x1="100" y1="0" x2="80" y2="160"/><line x1="150" y1="0" x2="130" y2="160"/>
+        <line x1="200" y1="0" x2="180" y2="160"/><line x1="250" y1="0" x2="230" y2="160"/><line x1="300" y1="0" x2="280" y2="160"/>
+        <line x1="350" y1="0" x2="330" y2="160"/><line x1="400" y1="0" x2="380" y2="160"/><line x1="450" y1="0" x2="430" y2="160"/>
+        <line x1="500" y1="0" x2="480" y2="160"/><line x1="550" y1="0" x2="530" y2="160"/><line x1="600" y1="0" x2="580" y2="160"/>
+        <line x1="650" y1="0" x2="630" y2="160"/><line x1="750" y1="0" x2="730" y2="160"/><line x1="800" y1="0" x2="780" y2="160"/>
+        <line x1="850" y1="0" x2="830" y2="160"/><line x1="880" y1="0" x2="860" y2="160"/>
+      </g>
+      <!-- sea waves -->
+      <rect x="0" y="230" width="900" height="90" fill="url(#ark_sea)"/>
+      <g stroke="#40AAFF" stroke-width="2.5" fill="none" opacity=".5">
+        <path d="M0,238 Q100,230 200,238 Q300,246 400,238 Q500,230 600,238 Q700,246 800,238 Q860,232 900,236"/>
+        <path d="M0,255 Q98,246 198,255 Q298,264 398,255 Q498,246 598,255 Q698,264 798,255 Q858,248 900,253"/>
+      </g>
+      <!-- ARK HULL -->
+      <path d="M180,230 Q200,215 700,215 Q720,215 730,230 Z" fill="url(#ark_wood)"/>
+      <rect x="200" y="160" width="490" height="58" fill="#6A3A10" rx="4"/>
+      <!-- ark windows row -->
+      <g fill="#FFD080" opacity=".7"><rect x="240" y="172" width="28" height="20" rx="2"/><rect x="290" y="172" width="28" height="20" rx="2"/><rect x="340" y="172" width="28" height="20" rx="2"/><rect x="390" y="172" width="28" height="20" rx="2"/><rect x="440" y="172" width="28" height="20" rx="2"/><rect x="490" y="172" width="28" height="20" rx="2"/><rect x="540" y="172" width="28" height="20" rx="2"/><rect x="590" y="172" width="28" height="20" rx="2"/><rect x="640" y="172" width="28" height="20" rx="2"/></g>
+      <!-- cabin top section -->
+      <rect x="280" y="115" width="340" height="50" fill="#7A4A15" rx="4"/>
+      <!-- cabin roof -->
+      <path d="M260,115 L450,80 L640,115 Z" fill="#5A3010"/>
+      <!-- giraffe head sticking out of window (cute!) -->
+      <g transform="translate(390,158)"><rect x="0" y="-40" width="10" height="40" fill="#C89030"/><rect x="-8" y="-42" width="28" height="18" fill="#C89030" rx="4"/><circle cx="2" cy="-46" r="3" fill="#8B5010"/><circle cx="18" cy="-46" r="3" fill="#8B5010"/><circle cx="5" cy="-38" r="2" fill="#111"/></g>
+      <!-- dove flying above ark -->
+      <g stroke="white" stroke-width="2" fill="none"><path d="M450,100 Q465,92 475,100"/><path d="M430,108 Q445,100 455,108"/></g>
+      <text x="450" y="312" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#4488FF" opacity=".35" letter-spacing="4">GENESIS  6–8</text>
+    </svg>`,
+
+    moses_baby:`<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="mb_sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0A1A20"/><stop offset="100%" stop-color="#102030"/></linearGradient>
+        <linearGradient id="mb_river" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0088AA"/><stop offset="100%" stop-color="#004466"/></linearGradient>
+        <radialGradient id="mb_sun" cx="65%" cy="15%"><stop offset="0%" stop-color="#FFE060" stop-opacity=".9"/><stop offset="30%" stop-color="#FF9900" stop-opacity=".4"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      </defs>
+      <rect width="900" height="320" fill="url(#mb_sky)"/>
+      <ellipse cx="585" cy="55" rx="280" ry="220" fill="url(#mb_sun)"/>
+      <circle cx="585" cy="48" r="38" fill="#FFE060" opacity=".95"/>
+      <circle cx="585" cy="48" r="28" fill="#FFFCE0"/>
+      <!-- NILE RIVER — vivid blue-teal -->
+      <rect x="0" y="215" width="900" height="105" fill="url(#mb_river)"/>
+      <!-- river sparkle -->
+      <g stroke="#40DDEE" stroke-width="2" fill="none" opacity=".45"><path d="M0,228 Q100,220 200,228 Q300,236 400,228 Q500,220 600,228 Q700,236 800,228 Q860,222 900,226"/><path d="M0,248 Q98,239 198,248 Q298,257 398,248 Q498,239 598,248 Q698,257 798,248 Q858,241 900,246"/></g>
+      <!-- lotus flowers on water -->
+      <g fill="#EE88AA" opacity=".7"><ellipse cx="120" cy="220" rx="14" ry="8"/><ellipse cx="108" cy="215" rx="10" ry="6"/><ellipse cx="132" cy="215" rx="10" ry="6"/></g>
+      <g fill="#FF88BB" opacity=".7"><ellipse cx="750" cy="222" rx="14" ry="8"/><ellipse cx="738" cy="217" rx="10" ry="6"/><ellipse cx="762" cy="217" rx="10" ry="6"/></g>
+      <!-- PAPYRUS REEDS — tall, green, left bank -->
+      <g stroke="#2A8030" stroke-width="6" stroke-linecap="round"><line x1="60" y1="215" x2="55" y2="130"/><line x1="88" y1="215" x2="85" y2="118"/><line x1="116" y1="215" x2="112" y2="128"/><line x1="144" y1="215" x2="140" y2="122"/></g>
+      <g fill="#3A9040"><ellipse cx="55" cy="130" rx="12" ry="20"/><ellipse cx="85" cy="118" rx="12" ry="20"/><ellipse cx="112" cy="128" rx="11" ry="18"/><ellipse cx="140" cy="122" rx="12" ry="20"/></g>
+      <!-- right bank reeds -->
+      <g stroke="#2A8030" stroke-width="5" stroke-linecap="round"><line x1="760" y1="215" x2="756" y2="135"/><line x1="788" y1="215" x2="785" y2="122"/><line x1="816" y1="215" x2="812" y2="132"/><line x1="844" y1="215" x2="840" y2="125"/></g>
+      <g fill="#3A9040"><ellipse cx="756" cy="135" rx="11" ry="18"/><ellipse cx="785" cy="122" rx="12" ry="20"/><ellipse cx="812" cy="132" rx="11" ry="18"/><ellipse cx="840" cy="125" rx="12" ry="19"/></g>
+      <!-- THE BASKET — center river, vivid woven look -->
+      <ellipse cx="450" cy="222" rx="50" ry="22" fill="#8B5A20"/>
+      <rect x="405" y="200" width="90" height="28" fill="#A06A28" rx="8"/>
+      <rect x="408" y="202" width="84" height="24" fill="#C88040" rx="6"/>
+      <!-- basket weave lines -->
+      <g stroke="#8B5A20" stroke-width="1.5" opacity=".6"><line x1="420" y1="202" x2="420" y2="226"/><line x1="435" y1="202" x2="435" y2="226"/><line x1="450" y1="202" x2="450" y2="226"/><line x1="465" y1="202" x2="465" y2="226"/><line x1="480" y1="202" x2="480" y2="226"/></g>
+      <!-- baby inside basket — little bundle visible -->
+      <ellipse cx="450" cy="208" rx="30" ry="14" fill="#F0E8D8"/>
+      <circle cx="450" cy="204" r="10" fill="#D4906A"/>
+      <!-- divine light on basket -->
+      <path d="M380,0 Q450,80 420,220" stroke="#FFD700" stroke-width="2" fill="none" opacity=".12"/>
+      <ellipse cx="450" cy="160" rx="120" ry="120" fill="#FFB800" opacity=".06"/>
+      <!-- MIRIAM watching from reeds right side -->
+      <g opacity=".8"><ellipse cx="680" cy="210" rx="14" ry="32" fill="#8B2040"/><circle cx="680" cy="178" r="16" fill="#C87840"/><path d="M660,175 Q658,192 666,198 Q673,202 680,200 Q687,202 694,196 Q700,190 700,175 Q694,162 680,160 Q666,162 660,175 Z" fill="#1A1008"/></g>
+      <text x="450" y="312" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#00CCAA" opacity=".35" letter-spacing="4">EXODUS  2</text>
+    </svg>`,
+
+    bush:`<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bsh_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#080400"/><stop offset="100%" stop-color="#100800"/></linearGradient>
+        <radialGradient id="bsh_fire" cx="50%" cy="55%"><stop offset="0%" stop-color="#FFFCE0"/><stop offset="12%" stop-color="#FFE060" stop-opacity=".95"/><stop offset="30%" stop-color="#FF8C00" stop-opacity=".8"/><stop offset="55%" stop-color="#CC3000" stop-opacity=".5"/><stop offset="80%" stop-color="#880000" stop-opacity=".2"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <linearGradient id="bsh_ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5C3A15"/><stop offset="100%" stop-color="#1A0A04"/></linearGradient>
+      </defs>
+      <rect width="900" height="320" fill="url(#bsh_bg)"/>
+      <!-- stars -->
+      <g fill="white"><circle cx="50" cy="25" r="2"/><circle cx="180" cy="12" r="1.6"/><circle cx="720" cy="20" r="2"/><circle cx="830" cy="30" r="1.5"/></g>
+      <!-- massive fire glow -->
+      <ellipse cx="450" cy="160" rx="500" ry="320" fill="url(#bsh_fire)"/>
+      <!-- ground -->
+      <rect x="0" y="260" width="900" height="60" fill="url(#bsh_ground)"/>
+      <!-- desert rocks -->
+      <ellipse cx="120" cy="265" rx="48" ry="20" fill="#3A1A08"/><ellipse cx="95" cy="260" rx="28" ry="14" fill="#4A2210"/>
+      <ellipse cx="780" cy="268" rx="52" ry="22" fill="#3A1A08"/><ellipse cx="808" cy="262" rx="30" ry="15" fill="#4A2210"/>
+      <!-- THE BURNING BUSH — center, blazing, vivid -->
+      <line x1="450" y1="262" x2="450" y2="195" stroke="#1A0800" stroke-width="12"/><line x1="450" y1="215" x2="395" y2="175" stroke="#1A0800" stroke-width="8"/><line x1="450" y1="208" x2="505" y2="172" stroke="#1A0800" stroke-width="8"/><line x1="450" y1="200" x2="418" y2="155" stroke="#1A0800" stroke-width="6"/><line x1="450" y1="198" x2="480" y2="152" stroke="#1A0800" stroke-width="6"/><line x1="395" y1="175" x2="365" y2="148" stroke="#1A0800" stroke-width="5"/><line x1="505" y1="172" x2="535" y2="148" stroke="#1A0800" stroke-width="5"/>
+      <!-- outer flame -->
+      <path d="M368,215 Q340,175 362,132 Q380,100 404,128 Q392,92 415,68 Q422,112 408,138 Q428,100 432,138 Q448,96 468,130 Q482,158 474,195 Q500,158 492,200 Q464,222 450,220 Q434,222 368,215 Z" fill="#CC3000" opacity=".65"/>
+      <!-- mid flame -->
+      <path d="M382,215 Q358,182 376,148 Q392,118 410,142 Q400,108 420,86 Q426,122 414,148 Q432,116 436,148 Q452,112 466,144 Q478,170 470,204 Q492,172 486,208 Q462,224 450,222 Q436,224 382,215 Z" fill="#FF6600" opacity=".82"/>
+      <!-- inner bright -->
+      <path d="M400,214 Q380,192 396,164 Q410,140 424,160 Q416,132 430,108 Q436,138 426,162 Q442,136 448,164 Q462,138 472,162 Q482,188 470,212 Q456,224 450,222 Q440,224 400,214 Z" fill="#FFB800" opacity=".92"/>
+      <!-- white hot center -->
+      <path d="M420,213 Q406,196 418,174 Q428,156 435,170 Q432,148 437,128 Q442,150 438,172 Q448,152 456,174 Q464,196 450,212 Q443,220 437,218 Q428,220 420,213 Z" fill="#FFFCE0" opacity=".98"/>
+      <ellipse cx="437" cy="130" rx="10" ry="18" fill="white" opacity=".9"/>
+      <!-- 4pt sparkles -->
+      <g fill="#FFD54F" opacity=".9"><path d="M344,122 L347,114 L350,122 L358,125 L350,128 L347,136 L344,128 L336,125Z"/><path d="M560,118 L563,110 L566,118 L574,121 L566,124 L563,132 L560,124 L552,121Z"/><path d="M437,62 L440,54 L443,62 L451,65 L443,68 L440,76 L437,68 L429,65Z"/></g>
+      <!-- MOSES — left, kneeling in reverence, sandals off -->
+      <g transform="translate(220,240)"><rect x="-18" y="-80" width="36" height="80" fill="#8B6914" rx="7"/><circle cx="0" cy="-90" r="24" fill="#C87840"/><path d="M-23,-93 Q-25,-72 -16,-65 Q-8,-60 0,-62 Q8,-60 16,-67 Q24,-74 24,-93 Q18,-114 0,-116 Q-18,-114 -23,-93Z" fill="#E8E2D8"/><ellipse cx="0" cy="-84" rx="16" ry="18" fill="#C87840"/><path d="M-16,-68 Q-18,-50 -10,-44 Q-2,-40 4,-42 Q12,-44 16,-58 Q20,-72 18,-84" fill="#F0EDE8" opacity=".9"/><!-- sandal removed --><ellipse cx="-35" cy="8" rx="20" ry="8" fill="#5C3A18" transform="rotate(-12 -35 8)"/></g>
+      <text x="450" y="312" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#FF8800" opacity=".4" letter-spacing="4">EXODUS  3–4</text>
+    </svg>`,
+
+    red_sea:`<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="rs_sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#060A18"/><stop offset="100%" stop-color="#0C1220"/></linearGradient>
+        <linearGradient id="rs_wallL" x1="1" y1="0" x2="0" y2="0"><stop offset="0%" stop-color="#00BBFF"/><stop offset="60%" stop-color="#0066CC"/><stop offset="100%" stop-color="#002266"/></linearGradient>
+        <linearGradient id="rs_wallR" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00BBFF"/><stop offset="60%" stop-color="#0066CC"/><stop offset="100%" stop-color="#002266"/></linearGradient>
+        <linearGradient id="rs_floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C8983A"/><stop offset="100%" stop-color="#4A2C08"/></linearGradient>
+        <radialGradient id="rs_light" cx="50%" cy="30%"><stop offset="0%" stop-color="#FFB800" stop-opacity=".6"/><stop offset="40%" stop-color="#FF8C00" stop-opacity=".2"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      </defs>
+      <rect width="900" height="320" fill="url(#rs_sky)"/>
+      <ellipse cx="450" cy="100" rx="400" ry="300" fill="url(#rs_light)"/>
+      <!-- LEFT WATER WALL -->
+      <path d="M0,0 L225,0 L225,320 L0,320 Z" fill="url(#rs_wallL)"/>
+      <rect x="0" y="0" width="160" height="320" fill="#004499" opacity=".55"/>
+      <rect x="222" y="0" width="5" height="320" fill="#80EEFF" opacity=".9"/>
+      <!-- water lines left -->
+      <g stroke="#60DDFF" stroke-width="2.5" fill="none" opacity=".45"><path d="M10,38 Q70,30 130,38 Q180,46 222,40"/><path d="M10,80 Q68,71 128,80 Q178,89 222,82"/><path d="M10,124 Q66,114 126,124 Q176,134 222,126"/><path d="M10,170 Q64,159 124,170 Q174,181 222,172"/><path d="M10,218 Q62,207 122,218 Q172,229 222,220"/><path d="M10,268 Q60,257 120,268 Q170,279 222,270"/></g>
+      <!-- FISH left wall — bright, vivid -->
+      <g><ellipse cx="90" cy="75" rx="28" ry="14" fill="#FF8800"/><path d="M118,75 L136,62 L136,88Z" fill="#FF8800"/><line x1="95" y1="62" x2="95" y2="88" stroke="white" stroke-width="3" opacity=".6"/><circle cx="76" cy="73" r="4.5" fill="#111"/><circle cx="76" cy="72" r="1.8" fill="white"/></g>
+      <g><ellipse cx="55" cy="155" rx="22" ry="11" fill="#FFD700"/><path d="M77,155 L93,145 L93,165Z" fill="#FFD700"/><circle cx="42" cy="153" r="3.5" fill="#111"/></g>
+      <g><ellipse cx="130" cy="238" rx="24" ry="12" fill="#00DD88"/><path d="M106,238 L90,228 L90,248Z" fill="#00DD88"/><circle cx="142" cy="236" r="4" fill="#111"/></g>
+      <!-- foam left -->
+      <g fill="white" opacity=".35"><ellipse cx="224" cy="55" rx="13" ry="7" transform="rotate(-10 224 55)"/><ellipse cx="224" cy="120" rx="12" ry="6" transform="rotate(-8 224 120)"/><ellipse cx="224" cy="190" rx="13" ry="6" transform="rotate(-10 224 190)"/><ellipse cx="224" cy="258" rx="12" ry="5" transform="rotate(-8 224 258)"/></g>
+      <!-- RIGHT WATER WALL -->
+      <path d="M900,0 L675,0 L675,320 L900,320 Z" fill="url(#rs_wallR)"/>
+      <rect x="740" y="0" width="160" height="320" fill="#004499" opacity=".55"/>
+      <rect x="673" y="0" width="5" height="320" fill="#80EEFF" opacity=".9"/>
+      <g stroke="#60DDFF" stroke-width="2.5" fill="none" opacity=".45"><path d="M890,38 Q830,30 770,38 Q722,46 678,40"/><path d="M890,80 Q828,71 768,80 Q720,89 678,82"/><path d="M890,124 Q826,114 766,124 Q718,134 678,126"/><path d="M890,170 Q824,159 764,170 Q716,181 678,172"/><path d="M890,218 Q822,207 762,218 Q714,229 678,220"/><path d="M890,268 Q820,257 760,268 Q712,279 678,270"/></g>
+      <!-- FISH right wall -->
+      <g><ellipse cx="800" cy="80" rx="26" ry="13" fill="#FF44BB"/><path d="M774,80 L758,68 L758,92Z" fill="#FF44BB"/><line x1="795" y1="68" x2="795" y2="92" stroke="white" stroke-width="2.5" opacity=".5"/><circle cx="814" cy="78" r="4" fill="#111"/></g>
+      <g><ellipse cx="840" cy="175" rx="20" ry="10" fill="#FF8822"/><path d="M820,175 L806,166 L806,184Z" fill="#FF8822"/><circle cx="852" cy="173" r="3" fill="#111"/></g>
+      <g><ellipse cx="768" cy="255" rx="22" ry="11" fill="#44BBFF"/><path d="M746,255 L730,245 L730,265Z" fill="#44BBFF"/><circle cx="780" cy="253" r="4" fill="#111"/></g>
+      <!-- foam right -->
+      <g fill="white" opacity=".35"><ellipse cx="676" cy="58" rx="13" ry="7" transform="rotate(10 676 58)"/><ellipse cx="676" cy="125" rx="12" ry="6" transform="rotate(8 676 125)"/><ellipse cx="676" cy="193" rx="13" ry="6" transform="rotate(10 676 193)"/><ellipse cx="676" cy="260" rx="12" ry="5" transform="rotate(8 676 260)"/></g>
+      <!-- DRY CORRIDOR FLOOR -->
+      <path d="M227,320 Q330,255 450,234 Q570,255 673,320 Z" fill="url(#rs_floor)"/>
+      <!-- exposed sea floor details -->
+      <g fill="#8B6030" opacity=".5"><circle cx="310" cy="295" r="7"/><circle cx="360" cy="276" r="5"/><circle cx="410" cy="262" r="9"/><circle cx="452" cy="255" r="11"/><circle cx="492" cy="262" r="8"/><circle cx="540" cy="276" r="6"/><circle cx="590" cy="295" r="7"/></g>
+      <!-- crab! -->
+      <g transform="translate(448,270)" fill="#CC4422" opacity=".6"><ellipse cx="0" cy="0" rx="9" ry="6"/><line x1="-9" y1="-2" x2="-16" y2="-7" stroke="#CC4422" stroke-width="2.5"/><line x1="9" y1="-2" x2="16" y2="-7" stroke="#CC4422" stroke-width="2.5"/><line x1="-9" y1="2" x2="-16" y2="7" stroke="#CC4422" stroke-width="2.5"/><line x1="9" y1="2" x2="16" y2="7" stroke="#CC4422" stroke-width="2.5"/><circle cx="-3" cy="-1" r="2" fill="#111"/><circle cx="3" cy="-1" r="2" fill="#111"/></g>
+      <!-- starfish -->
+      <g transform="translate(505,283)" fill="#FF8844" opacity=".65"><polygon points="0,-10 3,-3 10,-3 4,2 7,9 0,5 -7,9 -4,2 -10,-3 -3,-3"/></g>
+      <!-- gold divine light down corridor -->
+      <path d="M400,0 Q445,120 430,320 L470,320 Q455,120 500,0 Z" fill="#FFB800" opacity=".05"/>
+      <!-- MOSES at corridor entrance -->
+      <g transform="translate(280,255)"><rect x="-20" y="-75" width="40" height="75" fill="#B8860B" rx="7"/><path d="M20,-60 Q38,-48 46,-35" stroke="#B8860B" stroke-width="13" fill="none" stroke-linecap="round"/><path d="M48,-33 Q64,-22 78,-18" fill="none" stroke="#5C3010" stroke-width="7" stroke-linecap="round"/><circle cx="80" cy="-16" r="10" fill="#FFB800"/><circle cx="80" cy="-16" r="6" fill="#FFE060"/><g fill="#FFD54F" opacity=".9"><path d="M80,-24 L83,-32 L86,-24 L94,-21 L86,-18 L83,-10 L80,-18 L72,-21Z"/></g><circle cx="0" cy="-88" r="26" fill="#C87840"/><path d="M-24,-91 Q-26,-70 -16,-63 Q-7,-58 0,-60 Q8,-58 16,-65 Q24,-72 24,-91 Q18,-112 0,-114 Q-18,-112 -24,-91Z" fill="#E8E2D8"/><ellipse cx="0" cy="-82" rx="18" ry="20" fill="#C87840"/><path d="M-17,-65 Q-19,-46 -11,-40 Q-3,-36 5,-38 Q13,-40 17,-54 Q21,-68 19,-80" fill="#F0EDE8" opacity=".95"/></g>
+      <!-- people walking through right side -->
+      <g opacity=".7" transform="translate(0,5)"><rect x="515" y="258" width="26" height="52" fill="#CC2020" rx="5"/><circle cx="528" cy="248" r="13" fill="#E84040"/><rect x="550" y="255" width="26" height="55" fill="#1848A0" rx="5"/><circle cx="563" cy="245" r="13" fill="#2868D8"/><rect x="585" y="258" width="24" height="52" fill="#186018" rx="5"/><circle cx="597" cy="248" r="12" fill="#28A028"/></g>
+      <!-- gold sparkles -->
+      <g fill="#FFB800" opacity=".9"><path d="M450,80 L454,70 L458,80 L468,84 L458,88 L454,98 L450,88 L440,84Z"/></g>
+      <g fill="#FFD54F" opacity=".5"><path d="M228,55 L231,47 L234,55 L242,58 L234,61 L231,69 L228,61 L220,58Z"/><path d="M672,52 L675,44 L678,52 L686,55 L678,58 L675,66 L672,58 L664,55Z"/></g>
+      <text x="450" y="312" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#00BBFF" opacity=".35" letter-spacing="4">EXODUS  14</text>
+    </svg>`,
+
+    default:`<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="def_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${bg}"/><stop offset="100%" stop-color="#060A10"/></linearGradient>
+        <radialGradient id="def_glow" cx="50%" cy="50%"><stop offset="0%" stop-color="${ac}" stop-opacity=".4"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      </defs>
+      <rect width="900" height="320" fill="url(#def_bg)"/>
+      <ellipse cx="450" cy="160" rx="420" ry="240" fill="url(#def_glow)"/>
+      <!-- star field -->
+      <g fill="white"><circle cx="80" cy="40" r="2"/><circle cx="200" cy="20" r="1.6"/><circle cx="380" cy="50" r="1.8"/><circle cx="560" cy="25" r="2"/><circle cx="720" cy="45" r="1.6"/><circle cx="840" cy="22" r="2"/><circle cx="140" cy="80" r="1.4"/><circle cx="660" cy="70" r="1.5"/></g>
+      <!-- 4pt sparkles -->
+      <g fill="${ac}" opacity=".7"><path d="M100,55 L103,47 L106,55 L114,58 L106,61 L103,69 L100,61 L92,58Z"/><path d="M800,50 L803,42 L806,50 L814,53 L806,56 L803,64 L800,56 L792,53Z"/><path d="M450,40 L453,32 L456,40 L464,43 L456,46 L453,54 L450,46 L442,43Z"/></g>
+      <!-- carbon fiber grid subtle -->
+      <g stroke="${ac}" stroke-width="0.5" opacity=".08"><line x1="0" y1="80" x2="900" y2="80"/><line x1="0" y1="160" x2="900" y2="160"/><line x1="0" y1="240" x2="900" y2="240"/><line x1="150" y1="0" x2="150" y2="320"/><line x1="300" y1="0" x2="300" y2="320"/><line x1="450" y1="0" x2="450" y2="320"/><line x1="600" y1="0" x2="600" y2="320"/><line x1="750" y1="0" x2="750" y2="320"/></g>
+      <!-- decorative ring -->
+      <circle cx="450" cy="160" r="110" fill="none" stroke="${ac}" stroke-width="1.5" stroke-dasharray="5 8" opacity=".3"/>
+      <circle cx="450" cy="160" r="92" fill="none" stroke="${ac}" stroke-width=".6" opacity=".15"/>
+    </svg>`
+  };
+  return graphics[type] || graphics['default'];
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER FUNCTIONS
+   ═══════════════════════════════════════════════ */
+let currentWeek = null;
+let currentStory = null;
+let currentPanel = 'archive';
+
+function startApp(){
+  document.getElementById('cover').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  renderApp();
+}
+
+function renderApp(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <nav class="top-nav">
+      <button class="tnb ${currentPanel==='archive'?'active':''}" onclick="showPanel('archive')">Story Archive</button>
+      <button class="tnb ${currentPanel==='about'?'active':''}" onclick="showPanel('about')">About</button>
+    </nav>
+    <div class="panel ${currentPanel==='archive'?'active':''}" id="panel-archive">
+      ${renderArchive()}
+    </div>
+    <div class="panel ${currentPanel==='about'?'active':''}" id="panel-about">
+      ${renderAbout()}
+    </div>
+  `;
+}
+
+function showPanel(p){
+  currentPanel = p;
+  currentWeek = null;
+  currentStory = null;
+  renderApp();
+}
+
+function renderArchive(){
+  if(currentStory !== null && currentWeek !== null){
+    return renderStoryDetail(WEEKS[currentWeek], WEEKS[currentWeek].stories[currentStory], currentWeek, currentStory);
+  }
+  if(currentWeek !== null){
+    return renderWeekDetail(WEEKS[currentWeek], currentWeek);
+  }
+  return renderWeekList();
+}
+
+function renderWeekList(){
+  return `
+    <div class="archive-intro">
+      <div class="sec-title">Eight Weeks of Stories</div>
+      <div class="sec-sub">For Avynn · Nightly · Five stories per week</div>
+      <p class="body-text">Forty stories. One child. A lifetime of truth planted early. Choose a week to begin tonight.</p>
+      <div class="progress-wrap">
+        <div class="progress-top"><span>Archive Progress</span><span>0 / 40 stories</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    ${WEEKS.map((w,i) => `
+      <div class="week-card" onclick="openWeek(${i})">
+        <div class="week-card-num">Week ${i+1}</div>
+        <div class="week-card-content">
+          <div class="week-card-name">${w.name}</div>
+          <div class="week-card-theme">${w.theme}</div>
+        </div>
+        <div class="week-card-count">${w.stories.length} stories →</div>
+      </div>
+    `).join('')}
+    <div class="seal">
+      <p>Train up a child in the way she should go</p>
+      <cite>Proverbs 22:6</cite>
+    </div>
+  `;
+}
+
+function openWeek(i){
+  currentWeek = i;
+  currentStory = null;
+  renderApp();
+}
+
+function openStory(wi, si){
+  currentWeek = wi;
+  currentStory = si;
+  renderApp();
+}
+
+function renderWeekDetail(week, wi){
+  return `
+    <button class="back-btn" onclick="closeWeek()">← All Weeks</button>
+    <div class="sec-title">${week.name}</div>
+    <div class="sec-sub">Week ${wi+1} · Five Nights</div>
+    <p class="body-text">${week.theme}</p>
+    <div class="divider"></div>
+    ${week.stories.map((s,si) => `
+      <div class="story-list-item" onclick="openStory(${wi},${si})">
+        <div class="sli-night">${s.night}</div>
+        <div>
+          <div class="sli-title">${s.title}</div>
+          <div class="sli-ref">${s.ref}</div>
+        </div>
+        <div class="sli-arrow">→</div>
+      </div>
+    `).join('')}
+    <div class="seal">
+      <p>${week.theme}</p>
+      <cite>Week ${wi+1}</cite>
+    </div>
+  `;
+}
+
+function closeWeek(){
+  currentWeek = null;
+  currentStory = null;
+  renderApp();
+}
+
+function renderStoryDetail(week, story, wi, si){
+  const totalStories = week.stories.length;
+  const hasNext = si < totalStories - 1;
+  const hasPrev = si > 0;
+
+  return `
+    <button class="back-btn" onclick="closeStory()">← ${week.name}</button>
+
+    <!-- VIVID STORY HEADER GRAPHIC -->
+    <div class="story-header">
+      ${headerGraphic(story.headerType, story.color, story.accentColor)}
+    </div>
+
+    <!-- STORY CARD -->
+    <div class="story-card">
+      <div class="story-meta">
+        <div class="story-night">${story.night}</div>
+        <div class="story-ref">${story.ref}</div>
+      </div>
+      <div class="story-title">${story.title}</div>
+      <div class="story-body">
+
+        <!-- STORY LINES -->
+        <div class="story-lines">
+          ${story.lines.map(l => `
+            <div class="story-line">
+              <div class="line-icon">${icon(l.icon)}</div>
+              <div>${l.text}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- ANCHOR VERSE -->
+        <div class="verse-block">
+          ${story.verse.text}
+          <cite>${story.verse.cite}</cite>
+        </div>
+
+        <!-- SAY IT TOGETHER -->
+        <div class="say-it">
+          <span class="say-label">Say it together</span>
+          <span class="say-text">${story.sayIt}</span>
+        </div>
+
+        <!-- BEDTIME PRAYER -->
+        <div class="prayer-card">
+          <h4>Tonight's Prayer</h4>
+          <p>${story.prayer}</p>
+          <cite>— Avynn's prayer for tonight</cite>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div style="display:flex;justify-content:space-between;margin-top:2rem;gap:1rem;">
+          ${hasPrev ? `<button class="back-btn" onclick="openStory(${wi},${si-1})" style="font-size:12px;">← ${week.stories[si-1].title}</button>` : '<span></span>'}
+          ${hasNext ? `<button class="back-btn" onclick="openStory(${wi},${si+1})" style="font-size:12px;color:var(--gold-bright);">${week.stories[si+1].title} →</button>` : `<button class="back-btn" onclick="closeStory()" style="font-size:12px;color:var(--gold-bright);">Week Complete ✦</button>`}
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function closeStory(){
+  currentStory = null;
+  renderApp();
+}
+
+function renderAbout(){
+  return `
+    <div class="sec-title">About This Archive</div>
+    <div class="sec-sub">Made for Avynn Renee Campbell · With love</div>
+    <p class="body-text">This archive was built as a nightly ritual — a way to plant the stories of God deep into Avynn's heart, one night at a time, before she closes her eyes.</p>
+    <p class="body-text">Each story is written for a child — simple, vivid, true. Each prayer is written in her voice, so she can speak it herself. The "say it together" lines are meant to be spoken out loud between you.</p>
+    <div class="divider"></div>
+    <div class="verse-block">
+      These words that I am giving you today are to be in your heart. Repeat them to your children. Talk about them when you sit in your house and when you walk along the road, when you lie down and when you get up.
+      <cite>Deuteronomy 6:6-7 · CSB</cite>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-title" style="font-size:26px;margin-top:1.5rem;">The Eight Weeks</div>
+    <div class="sec-sub">Forty stories across eight themes</div>
+    ${WEEKS.map((w,i) => `
+      <div style="padding:.9rem 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:3px;">Week ${i+1}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-bottom:2px;">${w.name}</div>
+        <div style="font-size:13px;color:var(--text-muted);">${w.theme}</div>
+      </div>
+    `).join('')}
+    <div class="seal">
+      <p>Every story has a purpose. Every night has meaning.</p>
+      <cite>Made for Avynn · With love · CSB</cite>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
